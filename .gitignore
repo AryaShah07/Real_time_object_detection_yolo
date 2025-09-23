@@ -1,0 +1,17 @@
+# Virtual environment
+# venv/runs/detect/**/weights/*.pt
+
+# YOLO training outputs
+# runs/
+
+# Python environment
+yolovenv/
+venv/
+__pycache__/
+
+# Cache files
+*.cache
+
+# OS files
+.DS_Store
+Thumbs.db
