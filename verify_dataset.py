@@ -23,11 +23,12 @@ def verify_yolo_dataset(dataset_path):
         print(f"  Failed to parse data.yaml: {e}")
         return
 
-    yaml_dir = os.path.dirname(yaml_path)
+    # Fix: resolve paths relative to the current script directory
     dataset_dirs = {}
-    for key in ["train", "val", "test"]:
+    for key in ["train", "valid"]:
         if key in yaml_data:
-            dir_path = os.path.normpath(os.path.join(yaml_dir, str(yaml_data[key])))
+            # If path is relative, resolve from dataset_path
+            dir_path = os.path.normpath(os.path.join(dataset_path, os.path.relpath(yaml_data[key], "..")))
             dataset_dirs[key] = dir_path
             if os.path.exists(dir_path):
                 print(f"   ✔ {key} path found: {dir_path}")
@@ -83,13 +84,21 @@ def verify_yolo_dataset(dataset_path):
 
     # --- Step 3: Validate labels ---
     print("\n Step 3: Validating label file contents ...")
+    label_files_found = False
+    total_labels_checked = 0
+    total_lines_checked = 0
     for split, img_dir in dataset_dirs.items():
         label_dir = os.path.normpath(os.path.join(os.path.dirname(img_dir), "labels"))
         label_files = sorted(glob(os.path.join(label_dir, "*.txt")))
+        if label_files:
+            label_files_found = True
 
-        for lf in label_files:
+        for idx, lf in enumerate(label_files, 1):
+            if idx % 500 == 0:
+                print(f"     Checked {idx} label files in {split}...")
             with open(lf, "r") as f:
                 for i, line in enumerate(f, 1):
+                    total_lines_checked += 1
                     parts = line.strip().split()
                     if len(parts) < 5:
                         errors.append(f"{lf} line {i}: Invalid format (need >=5 values)")
@@ -117,18 +126,27 @@ def verify_yolo_dataset(dataset_path):
                         for val in polygon:
                             if not (0 <= val <= 1):
                                 errors.append(f"{lf} line {i}: Segmentation coord {val} out of range [0,1]")
+            total_labels_checked += 1
+
+        if label_files:
+            print(f"     Finished checking {len(label_files)} label files in {split}.")
 
     print(f"   → Found class IDs in labels: {sorted(all_class_ids)}")
+    print(f"   → Checked {total_labels_checked} label files, {total_lines_checked} label lines.")
 
     # --- Step 4: Cross-check class IDs with data.yaml ---
     print("\n Step 4: Cross-checking classes with data.yaml ...")
-    if all_class_ids:
+    if not label_files_found:
+        print("   No label files found, skipping class ID cross-check.")
+    elif all_class_ids:
         max_id = max(all_class_ids)
         print(f"   → Max class_id = {max_id}")
         if "nc" in yaml_data and (max_id + 1) != yaml_data["nc"]:
             errors.append(f"data.yaml: nc={yaml_data['nc']} but found class_id up to {max_id} (should be {max_id+1})")
         if "names" in yaml_data and len(yaml_data["names"]) <= max_id:
             errors.append(f"data.yaml: names has {len(yaml_data['names'])} entries but found class_id {max_id}")
+    else:
+        print("   No class IDs found in label files.")
 
     # --- Final Report ---
     print("\n ---Final Report---")
