@@ -37,7 +37,7 @@ def run_training():
         imgsz=640,  # use larger size for best results if possible
         device=device,
         optimizer="AdamW",
-        name="final_best_train",
+        name="best_train_results",
         **hyp
     )
 

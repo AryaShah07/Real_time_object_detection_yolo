@@ -4,7 +4,7 @@ import os
 import sys
 
 # Define model path - update this to your actual weights location
-model_path = 'runs\detect\final_best_train4\weights\best.pt'
+model_path = 'runs/detect/final_best_train4/weights/best.pt'
 
 # Check if model file exists
 if not os.path.exists(model_path):
