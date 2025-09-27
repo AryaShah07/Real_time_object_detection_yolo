@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOLO Object Detection</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f9; }
+        h1 { color: #333; }
+        .container { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); width: 400px; margin: auto; }
+        input[type="file"] { margin: 15px 0; }
+        button { padding: 10px 20px; background: #007BFF; border: none; color: white; cursor: pointer; border-radius: 5px; }
+        button:hover { background: #0056b3; }
+        pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; max-height: 300px; }
+        img { margin-top: 20px; border-radius: 10px; max-width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Image for Detection</h1>
+        <form id="uploadForm">
+            <input type="file" name="image" id="imageInput" accept="image/*" required>
+            <br>
+            <button type="submit">Detect Objects</button>
+        </form>
+
+        <h3>Detection Results (JSON):</h3>
+        <pre id="resultBox">No results yet...</pre>
+
+        <h3>Annotated Image:</h3>
+        <img id="annotatedImage" src="" alt="Annotated Image" style="display:none;">
+    </div>
+
+    <script>
+        const form = document.getElementById("uploadForm");
+        const resultBox = document.getElementById("resultBox");
+        const annotatedImage = document.getElementById("annotatedImage");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById("imageInput");
+            if (!fileInput.files.length) return alert("Please select an image.");
+
+            const formData = new FormData();
+            formData.append("image", fileInput.files[0]);
+
+            resultBox.textContent = "Detecting...";
+            annotatedImage.style.display = "none";
+
+            try {
+                const res = await fetch("/detect", { method: "POST", body: formData });
+
+                // Check if response is JSON
+                const contentType = res.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    const data = await res.json();
+                    resultBox.textContent = JSON.stringify(data.detections, null, 2);
+
+                    if (data.annotated_image) {
+                        annotatedImage.src = data.annotated_image + "?t=" + new Date().getTime(); // cache-busting
+                        annotatedImage.style.display = "block";
+                    }
+                } else {
+                    const text = await res.text();
+                    resultBox.textContent = "Error (non-JSON response):\n" + text;
+                }
+            } catch (err) {
+                resultBox.textContent = "Error: " + err.message;
+                annotatedImage.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
