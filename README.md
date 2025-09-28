@@ -1,27 +1,27 @@
 Real-Time Object Detection using YOLOv8
-This project is about detecting objects in real time with YOLOv8. The model can take input from images, videos, or even a webcam and highlight the detected objects with bounding boxes.
+This project detects objects in real time using YOLOv8. The model can take input from images, videos, or a webcam and highlight detected objects with bounding boxes.
 
 ✨ Features
 Train the model on a custom dataset
 
 Run detection on images, videos, or live camera
 
-Save the results with bounding boxes and labels
+Save results with bounding boxes and labels
 
 Check accuracy and performance using evaluation metrics
 
 ❓ Why YOLOv8?
 We decided to use YOLOv8 because:
 
-It gives good accuracy while being fast
+Good accuracy while being fast
 
-It is easy to train and test in one framework
+Easy to train and test in one framework
 
-It has many tutorials and documentation available
+Extensive tutorials and documentation available
 
-It supports transfer learning with pretrained weights
+Supports transfer learning with pretrained weights
 
-(We are aware that YOLOv11 is newer and gives better results, but YOLOv8 is more stable, easier to use, and well supported right now. So we selected YOLOv8 for this project.)
+Note: YOLOv11 is newer and may give better results, but YOLOv8 is more stable, easier to use, and well supported, so we selected it for this project.
 
 📦 Required Python Libraries
 Library	Purpose
@@ -40,33 +40,50 @@ tensorboard	Monitoring training progress (optional)
 roboflow	Dataset import (optional)
 psutil	Monitor CPU/GPU usage (optional)
 🔍 Research & Select YOLOv8 Variant
-We analyzed different YOLOv8 pre-trained models based on size, speed, accuracy, and hardware requirements:
+Model	Description	Use-case
+YOLOv8-n (Nano)	Extremely lightweight, fastest inference & training	Best when speed & low resource usage are critical
+YOLOv8-s (Small)	Better accuracy than Nano, moderate inference speed	Balanced choice between speed & accuracy
+YOLOv8-m / l / x	Higher accuracy, heavier & slower	Requires powerful GPUs
+Selection Justification:
+We focused on real-time object detection with limited hardware resources. YOLOv8n provides fast inference, low memory usage, and acceptable accuracy, aligning perfectly with our project goals.
 
-YOLOv8-n (Nano)
+📊 Performance Metrics & Modeling Approach
+Evaluation Metrics
+mAP@50: Detection accuracy at IoU threshold 0.5
 
-Extremely lightweight, fastest inference & training speed
+mAP@50-95: Mean Average Precision across IoU thresholds (0.5–0.95)
 
-Runs efficiently on CPUs or low-end GPUs
+Precision: Correctness of predicted detections
 
-Slightly lower accuracy but good enough for real-time apps
+Recall: Ability to detect all relevant objects
 
-✅ Best when speed and low resource usage are critical
+Losses (Box, Cls, DFL): Indicators of localization, classification, and distribution errors
 
-YOLOv8-s (Small)
+Results Summary (Epochs 1–28)
+Loss Reduction: Training and validation losses decreased steadily
 
-Better accuracy than Nano
+Training Box Loss: 2.01 → 1.58
 
-Moderate inference speed, suitable for standard GPUs
+Training Cls Loss: 4.23 → 2.59
 
-Balanced choice between speed & accuracy
+Training DFL Loss: 1.89 → 1.58
 
-YOLOv8-m, YOLOv8-l, YOLOv8-x
+Validation losses decreased similarly, showing strong learning and reduced overfitting
 
-Higher accuracy, but much heavier and slower
+Precision: Improved from 0.28 → ~0.40, indicating more confident predictions
 
-Require powerful GPUs
+Recall: Increased from 0.03 → 0.14, showing the model detects more true objects over time
 
-Selection Justification
-For this project, the focus is real-time object detection with limited hardware resources.
-We selected YOLOv8n because it provides fast inference, low memory usage, and acceptable accuracy, which aligns perfectly with our project goals.
+mAP@50: Increased from 0.002 → 0.108
 
+mAP@50-95: Improved from 0.0009 → 0.066
+
+✅ Key Takeaway: The model demonstrates consistent learning, with reduced losses, improved precision, and gradually increasing recall and mAP. Trends indicate that further training, data augmentation, and hyperparameter tuning will enhance detection performance.
+
+Final Modeling Choice
+YOLOv8n (Nano): ✅ Chosen for efficiency, speed, and low hardware requirements
+
+YOLOv8s (Small): Slightly higher accuracy but heavier, not ideal for resource-constrained hardware
+
+Final Decision:
+We use YOLOv8n because it enables real-time inference on limited hardware while showing stable and progressive accuracy growth.
