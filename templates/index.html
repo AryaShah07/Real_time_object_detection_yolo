@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YOLO Object Detection</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f9; }
-        h1 { color: #333; }
-        .container { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); width: 400px; margin: auto; }
-        input[type="file"] { margin: 15px 0; }
-        button { padding: 10px 20px; background: #007BFF; border: none; color: white; cursor: pointer; border-radius: 5px; }
-        button:hover { background: #0056b3; }
-        pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; max-height: 300px; }
-        img { margin-top: 20px; border-radius: 10px; max-width: 100%; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <nav>
+    <div class="nav-logo">
+        <img src="/static/assets/yolo_logo.png" alt="YOLO Logo">
+    </div>
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html" class="active">About</a></li>
+    </ul>
+</nav>
     <div class="container">
         <h1>Upload Image for Detection</h1>
         <form id="uploadForm">
@@ -24,8 +24,8 @@
             <button type="submit">Detect Objects</button>
         </form>
 
-        <h3>Detection Results (JSON):</h3>
-        <pre id="resultBox">No results yet...</pre>
+        <h3>Detection Summary:</h3>
+        <pre id="resultBox" class="placeholder">Upload an image and click 'Detect Objects' to see results.</pre>
 
         <h3>Annotated Image:</h3>
         <img id="annotatedImage" src="" alt="Annotated Image" style="display:none;">
@@ -44,31 +44,73 @@
             const formData = new FormData();
             formData.append("image", fileInput.files[0]);
 
+            // Clear previous results and show "Detecting..."
             resultBox.textContent = "Detecting...";
+            resultBox.classList.remove('placeholder');
+            resultBox.classList.add('loading');
             annotatedImage.style.display = "none";
+            annotatedImage.src = ""; // Clear previous image source
+
 
             try {
-                const res = await fetch("/detect", { method: "POST", body: formData });
+                const res = await fetch("http://127.0.0.1:8000/detect", { method: "POST", body: formData });
 
-                // Check if response is JSON
                 const contentType = res.headers.get("content-type");
                 if (contentType && contentType.includes("application/json")) {
                     const data = await res.json();
-                    resultBox.textContent = JSON.stringify(data.detections, null, 2);
+
+                    // --- START OF CHANGE ---
+                    // Option 1: Set a generic message (recommended for good UX)
+                    if (data.annotated_image) {
+                        resultBox.textContent = "Detection complete. See annotated image below.";
+                    } else if (data.error) {
+                         resultBox.textContent = `Error: ${data.error}`;
+                    } else {
+                        resultBox.textContent = "No objects detected or no annotated image generated.";
+                    }
+
+                    // Option 2: Clear the text content completely (less informative)
+                    // resultBox.textContent = "";
+                    // --- END OF CHANGE ---
+
+                    resultBox.classList.remove('loading');
 
                     if (data.annotated_image) {
-                        annotatedImage.src = data.annotated_image + "?t=" + new Date().getTime(); // cache-busting
+                        annotatedImage.src = data.annotated_image + "?t=" + new Date().getTime();
                         annotatedImage.style.display = "block";
                     }
+
                 } else {
                     const text = await res.text();
+                    resultBox.classList.remove('loading');
                     resultBox.textContent = "Error (non-JSON response):\n" + text;
+                    annotatedImage.style.display = "none";
                 }
             } catch (err) {
+                resultBox.classList.remove('loading');
                 resultBox.textContent = "Error: " + err.message;
                 annotatedImage.style.display = "none";
             }
         });
     </script>
 </body>
+<footer style="background:#0056b3; color:#fff; padding:2rem 1rem; margin-top:3rem;">
+  <div style="max-width:1100px; margin:auto; text-align:center;">
+    <p style="font-size:1.1rem; margin-bottom:1rem;"> Connect With Us</p>
+    <p>
+      <a href="https://github.com/YourRepoLink" target="_blank" style="color:#32dde6; text-decoration:none; margin:0 10px;">
+        GitHub Repo
+      </a> |
+      <a href="https://youtu.be/YourDemoVideoLink" target="_blank" style="color:#32dde6; text-decoration:none; margin:0 10px;">
+        Demo Video
+      </a> |
+      <a href="mailto:team@example.com" style="color:#32dde6; text-decoration:none; margin:0 10px;">
+        Email Us
+      </a>
+    </p>
+    <p style="font-size:0.85rem; color:#b3b0b0; margin-top:1rem;">
+      © 2025 Team Samfocus — YOLO Object Detection Project
+    </p>
+  </div>
+</footer>
 </html>
