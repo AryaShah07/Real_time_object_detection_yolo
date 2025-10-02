@@ -1,35 +1,38 @@
-/* ===== Global Styles ===== */
+/* ===== Global Styles (Keep as is) ===== */
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    color: #000000;
+    color: #ffffff; 
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    position: relative; /* needed for pseudo-element */
+    position: relative; 
+    
+    background: #0d0a2c;
+    background-image: 
+        linear-gradient(180deg, #0d0a2c 0%, #170c40 100%);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
-
-
-/* ===== Navigation Bar ===== */
-/* ===== Navbar ===== */
+/* ===== Navbar (Keep as is) ===== */
 nav {
     display: flex;
     align-items: center;
-    justify-content: center; /* This centers the nav links */
-    background: #0056b3;
+    justify-content: center;
+    background: rgba(13, 10, 44, 0.8);
+    backdrop-filter: blur(5px);
     padding: 23px 30px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     position: sticky;
     top: 0;
     z-index: 100;
-    position: relative; /* for absolute positioning of logo */
 }
 
-/* Logo on the left */
 .nav-logo {
     position: absolute;
-    left: 30px; /* same as nav padding-left */
+    left: 30px;
     display: flex;
     align-items: center;
 }
@@ -37,125 +40,353 @@ nav {
 .nav-logo img {
     height: 40px;
     width: auto;
+    filter: none; /* Keep original logo colors */
+    border-radius: 8px; /* Rounded corners */
 }
 
-/* Nav links centered */
 nav ul {
     display: flex;
-    justify-content: center; /* links centered */
+    justify-content: center; 
     align-items: center;
     list-style: none;
     margin: 0;
     padding: 0;
-    gap: 30px; /* space between links */
+    gap: 30px; 
 }
 
 nav ul li a {
-    color: white;
+    color: #b3b0b0;
     font-weight: 500;
     text-transform: uppercase;
     transition: color 0.3s, transform 0.2s;
+    text-decoration: none;
 }
 
-nav ul li a:hover {
-    color: #ffd700;
+nav ul li a:hover,
+nav ul li a.active {
+    color: #32dde6;
     transform: scale(1.1);
 }
 
-
-
-/* ===== Container ===== */
-.container {
-    flex-grow: 1; /* This is the key: makes the container grow to fill available space */
-    /* Any existing styles for .container go here */
-    background: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
-    padding: 40px; /* Increased padding */
-    border-radius: 16px; /* Slightly more rounded corners */
-    box-shadow: 0 6px 25px rgba(0,0,0,0.2); /* Enhanced shadow */
-    max-width: 1200px; /* Wider container */
-    margin: 80px auto; /* Adjusted margin */
-    transition: transform 0.2s, box-shadow 0.3s;
-    position: relative; /* Ensure stacking context */
-}
-.container:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.3); /* More pronounced hover effect */
-}
-
-
-footer {
-    /* Existing footer styles */
-    background:#0056b3;
-    color:#fff;
-    padding:2rem 1rem;
-    margin-top:3rem; /* Keep this if you want space between content and footer */
-    width: 100%; /* Ensure it spans the full width */
-    /* No absolute or fixed positioning is needed with this Flexbox setup */
-}
-
-
-
-/* ===== Headings ===== */
-h1, h3 {
+/* ===== HERO SECTION (Keep as is) ===== */
+.hero-section {
     text-align: center;
-    color: #000000;
+    padding: 80px 20px 0;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: 700;
     margin-bottom: 20px;
+    background: linear-gradient(90deg, #b3b0b0 0%, #32dde6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: #32dde6; 
 }
 
-/* ===== Form Elements ===== */
-input[type="file"] {
-    padding: 12px;
-    border: 2px dashed #007BFF;
-    border-radius: 6px;
-    background: #f9f9ff;
-    cursor: pointer;
-    width: 100%;
-    transition: background 0.3s, border-color 0.3s;
-}
-input[type="file"]:hover {
-    background: #eef6ff;
-    border-color: #0056b3;
+.hero-content p {
+    font-size: 1.2rem;
+    color: #b3b0b0;
+    margin-bottom: 40px;
+    line-height: 1.6;
 }
 
-button {
-    width: 100%;
-    margin-top: 15px;
-    padding: 14px;
-    font-size: 16px;
-    font-weight: bold;
-    background: linear-gradient(90deg, #007BFF, #0056b3);
-    border: none;
+.try-now-button {
+    width: auto;
+    min-width: 200px;
+    padding: 15px 30px;
+    margin-top: 0;
+    font-size: 18px;
+    background: linear-gradient(90deg, #8a2be2, #32dde6); 
+    border: 1px solid #32dde6;
     border-radius: 6px;
     color: white;
     cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
+    box-shadow: 0 0 15px #32dde6;
+    transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
 }
-button:hover {
-    background: linear-gradient(90deg, #0056b3, #004080);
+
+.try-now-button:hover {
+    box-shadow: 0 0 25px #32dde6;
+    transform: scale(1.05);
+}
+
+.hero-placeholder-box {
+    margin: 60px auto 0;
+    width: 100%;
+    max-width: 800px;
+    height: 400px;
+    background: rgba(0, 0, 0, 0.3); 
+    border: 1px solid rgba(50, 221, 230, 0.3); 
+    border-radius: 10px;
+    box-shadow: 0 0 50px rgba(50, 221, 230, 0.1);
+    
+    /* Center the image inside the box */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Ensure no overflow */
+    overflow: hidden; 
+}
+
+/* New style for the actual hero image */
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image covers the container */
+    border-radius: 0; /* Override any global img border-radius */
+    margin: 0; /* Override any global img margin */
+    display: block;
+}
+/* ===== FEATURE CARDS (Keep as is) ===== */
+.feature-cards-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 80px auto;
+    padding: 0 30px;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.05); 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+    min-height: 150px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.feature-card:hover {
+    background: rgba(50, 221, 230, 0.1); 
+    transform: translateY(-10px);
+    box-shadow: 0 10px 30px rgba(50, 221, 230, 0.4);
+}
+
+.feature-card h3 {
+    color: #32dde6; 
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.feature-card p {
+    color: #b3b0b0;
+    font-size: 0.9rem;
+}
+
+/* -------------------------------------- */
+/* ===== STUDIO CONTAINER (Adjusted for Dark Theme UI) ===== */
+/* -------------------------------------- */
+
+/* Main white container for the studio section */
+.container.studio-container {
+    background: #ffffff; /* KEEP WHITE THEME as requested */
+    color: #000000; 
+    padding: 40px; 
+    border-radius: 16px; 
+    box-shadow: 0 6px 40px rgba(50, 221, 230, 0.4); 
+    max-width: 1200px; 
+    margin: 80px auto; 
+    transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.container.studio-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 50px rgba(50, 221, 230, 0.6); 
+}
+
+/* Headers inside the white container */
+.studio-container h2, .studio-container h3, .studio-container h4 {
+    color: #0d0a2c; 
+    text-align: center;
+}
+
+/* -------------------------------------- */
+/* --- Dark Studio UI Styles (Matching second screenshot) --- */
+/* -------------------------------------- */
+
+.detection-studio-layout {
+    display: flex;
+    gap: 30px; 
+    flex-wrap: wrap; 
+}
+
+/* Left panel: Upload Controls - Now DARK */
+.controls-panel {
+    flex: 1; 
+    min-width: 280px; 
+    background: #14112e; /* Darker than body background */
+    color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    border: 1px solid #32dde61a; /* Subtle neon border */
+}
+
+/* Right panel: Results - Now DARK */
+.results-panel {
+    flex: 2; 
+    min-width: 300px;
+    background: #14112e; /* Darker than body background */
+    color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    border: 1px solid #32dde61a; /* Subtle neon border */
+}
+
+/* Headers inside the dark panels */
+.controls-panel h3, .results-panel h3 {
+    color: #32dde6; /* Neon color for headers */
+    text-align: left;
+    margin-top: 0;
+}
+.results-panel h4 {
+    color: #32dde6;
+    text-align: left;
+}
+
+/* Input file style adjustments inside dark panel */
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center form elements */
+}
+
+.upload-label {
+    background: #0d0a2c; /* Even darker background for the label/dropzone */
+    border: 2px dashed #32dde6;
+    color: #b3b0b0;
+    padding: 40px 20px;
+    width: 90%; /* Take full width of panel */
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 10px;
+}
+
+.upload-label:hover {
+    background-color: #170c40;
+}
+
+/* Hide the default file input */
+input[type="file"] {
+    display: none; 
+}
+
+
+/* --- Detect Objects Button Placement and Size --- */
+/* The general button style is overridden here for the detect button */
+button#detectButton {
+    /* Center align and increase width as requested */
+    width: 90%; 
+    max-width: 300px; /* Limit max size to keep it looking good */
+    margin: 15px auto 0; /* Center horizontally with auto margins */
+    display: block; /* Make it a block element for margin auto to work */
+
+    /* Dark theme colors */
+    background: linear-gradient(90deg, #8a2be2, #32dde6); 
+    border: none;
+    box-shadow: 0 0 10px rgba(50, 221, 230, 0.5); /* Neon shadow */
+    font-size: 1rem;
+    padding: 12px;
+}
+button#detectButton:hover {
+    background: linear-gradient(90deg, #6a1de0, #22c3ce);
     transform: scale(1.02);
 }
 
-/* ===== Detection Results ===== */
-pre {
-    background: #ffffff;
-    padding: 15px;
-    border-radius: 8px;
-    border-left: 5px solid #007BFF;
-    overflow-x: auto;
-    max-height: 300px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+/* Placeholder for JSON results */
+pre#resultBox {
+    background: #0d0a2c; /* Dark background for JSON box */
+    color: #32dde6; /* Neon text color for results */
+    border-left: 5px solid #8a2be2; /* Purple accent */
+    white-space: pre-wrap; /* Ensure wrapping of content */
+    max-height: 200px; /* Limit height of JSON box */
 }
 
-img {
-    display: block;
-    margin: 20px auto;
-    border-radius: 10px;
-    max-width: 100%;
-    transition: transform 0.3s, box-shadow 0.3s;
+/* Annotated Image - Keep as is, but ensure it displays well */
+img#annotatedImage {
+    background: rgba(255, 255, 255, 0.1); /* To show placeholder area */
+}
+
+.faq-section {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+}
+
+.faq-section h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 2em;
+}
+
+.faq-item {
+  margin-bottom: 10px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.faq-question {
+  width: 100%;
+  padding: 15px;
+  text-align: left;
+  background: #53bdcd;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1em;
+}
+
+.faq-answer {
+  display: none;
+  padding: 15px;
+  background: #f9f9f9;
+  color: #333;
+}
+
+.faq-item.active .faq-answer {
+  display: block;
 }
 
 
-/* ===== Team Section ===== */
+
+/* ===== About Section (Keep as is) ===== */
+.about-section {
+    max-width: 1100px;
+    margin: 80px auto;
+    padding: 20px 40px;
+    color: #ffffff; 
+}
+
+.about-section h1, .about-section h3 {
+    color: #32dde6; 
+}
+
+.about-section ul {
+    list-style-type: none; 
+    padding-left: 0;
+}
+
+.about-section ul li:before {
+    content: "•"; 
+    color: #32dde6;
+    display: inline-block; 
+    width: 1em;
+    margin-left: -1em;
+}
+
+/* ===== Team Section (Keep as is) ===== */
 .team {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -164,17 +395,18 @@ img {
 }
 
 .member-card {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.1);
     padding: 20px;
     text-align: center;
     border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
 }
 
 .member-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    background: rgba(50, 221, 230, 0.1);
 }
 
 .member-card img {
@@ -183,22 +415,25 @@ img {
     border-radius: 50%;
     object-fit: cover;
     margin-bottom: 15px;
-    border: 3px solid #007BFF;
-    background: #f0f0f0; /* default avatar background */
+    border: 3px solid #32dde6;
+    background: #f0f0f0; 
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .member-card h4 {
     margin: 10px 0 5px 0;
     font-size: 1.1rem;
-    color: #000;
+    color: #ffffff;
 }
 
 .member-card p {
     font-size: 0.9rem;
-    color: #555;
+    color: #b3b0b0;
 }
 
-/* ===== Responsive Design ===== */
+/* ===== Responsive Design (Keep as is) ===== */
 @media (max-width: 768px) {
     .container {
         margin: 20px;
@@ -210,6 +445,27 @@ img {
     nav ul li {
         margin: 10px 0;
     }
+    .hero-content h1 {
+        font-size: 2.2rem;
+    }
+    .hero-content p {
+        font-size: 1rem;
+    }
+    .hero-placeholder-box {
+        height: 250px;
+    }
 }
 
+.main-content {
+    flex: 1;
+}
 
+/* ===== Footer (Keep as is) ===== */
+footer {
+    background: rgba(13, 10, 44, 0.8); 
+    color: #fff;
+    padding: 2rem 1rem;
+    width: 100%; 
+    text-align: center;
+    border-top: 1px solid #170c40;
+}

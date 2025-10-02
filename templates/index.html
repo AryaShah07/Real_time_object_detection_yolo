@@ -3,114 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOLO Object Detection</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Real-time-object-detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> 
 </head>
 <body>
     <nav>
     <div class="nav-logo">
-        <img src="/static/assets/yolo_logo.png" alt="YOLO Logo">
+        <img src="{{ url_for('static', filename='assets/yolo_logo.png') }}" alt="YOLO Logo" style="height:50px;">
     </div>
     <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="about.html" class="active">About</a></li>
+        <li><a href="#hero" class="active">Home</a></li>
+        <li><a href="#about">About</a></li>
     </ul>
 </nav>
-    <div class="container">
-        <h1>Upload Image for Detection</h1>
-        <form id="uploadForm">
-            <input type="file" name="image" id="imageInput" accept="image/*" required>
-            <br>
-            <button type="submit">Detect Objects</button>
-        </form>
 
-        <h3>Detection Summary:</h3>
-        <pre id="resultBox" class="placeholder">Upload an image and click 'Detect Objects' to see results.</pre>
 
-        <h3>Annotated Image:</h3>
-        <img id="annotatedImage" src="" alt="Annotated Image" style="display:none;">
+    <section class="hero-section" id="hero">
+        <div class="hero-content">
+            <h1>Real-time-object-detection 🔍✨</h1>
+            <p>
+                Experience real-time object detection powered by YOLO. 
+                Detect people, vehicles, and everyday objects instantly through your camera roll
+                – **all in your browser with complete privacy..**
+            </p>
+            <button class="try-now-button" onclick="document.getElementById('studio-section').scrollIntoView({ behavior: 'smooth' });">
+                <i class="fas fa-play"></i> Try It Now
+            </button>
+            
+            <div class="hero-placeholder-box">
+        <img src="{{ url_for('static', filename='assets/heroImage.jpg') }}" alt="AI Recognition Demo Image" class="hero-image">
     </div>
+        </div>
+    </section>
+
+    <section class="feature-cards-section">
+        <div class="feature-card">
+            <h3>100% Private</h3>
+            <p>All processing happens locally in your browser</p>
+        </div>
+        <div class="feature-card">
+            <h3>Upload & Detection</h3>
+            <p>Instant image upload with fast YOLO object detection</p>
+        </div>
+        <div class="feature-card">
+            <h3>Annotated Output</h3>
+            <p>Bounding boxes and labels displayed directly on detected objects</p>
+        </div>
+        <div class="feature-card">
+            <h3>Free to Use</h3>
+            <p>No registration or subscription required</p>
+        </div>
+    </section>
+
+    <main>
+        <div class="container studio-container" id="studio-section">
+            <h2>YOLO Object Detection Studio</h2>
+            
+            <div class="detection-studio-layout">
+                <div class="controls-panel">
+                    <h3>Image Recognition Controls</h3>
+                    <form id="uploadForm" class="upload-form">
+                        <label for="imageInput" class="upload-label" id="uploadLabel">Choose an image</label>
+                        <input type="file" name="image" id="imageInput" accept="image/*" required>
+                        <button type="submit" id="detectButton">Detect Objects</button>
+                    </form>
+                </div>
+
+                <div class="results-panel">
+                    <h3>Results 📋</h3>
+                    <div class="result-box-wrapper">
+                        <pre id="resultBox" class="placeholder">Upload an image and start recognition to see your analysis results here.</pre>
+                    </div>
+                    <h4>Annotated Image:</h4>
+                    <img id="annotatedImage" src="" alt="Annotated Image" style="display:none;">
+                </div>
+            </div>
+        </div>
+
+
+        <div class="about-section" id="about">
+            <h1>About YOLO Object Detection</h1>
+            <p>
+                This Website demonstrates real-time object detection using the YOLO (You Only Live Once) algorithm. 
+                We built this with modern tools to deliver accurate and fast detection in real-world applications.
+            </p>
+
+            <h3>Tools Used</h3>
+            <ul>
+                <li>YOLOv8</li>
+                <li>Flask (Backend Framework)</li>
+                <li>HTML, CSS (Frontend)</li>
+            </ul>
+
+            <h3>Key Features</h3>
+            <ul>
+                <li>Real-time image upload and object detection</li>
+                <li>Annotated output with bounding boxes</li>
+                <li>JSON results for easy integration</li>
+                <li>Lightweight Flask backend for fast deployment</li>
+                <li>User-friendly frontend interface</li>
+            </ul>
+
+            <h3>Meet Our Team</h3>
+            <div class="team">
+                <div class="member-card">
+                    <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Vaibhav Mhetre">
+                    <h4>Vaibhav Mhetre</h4>
+                    <p>Project Manager</p>
+                </div>
+                <div class="member-card">
+                    <img src="https://www.w3schools.com/howto/img_avatar2.png" alt="Arya Shah">
+                    <h4>Arya Shah</h4>
+                    <p>Backend Developer</p>
+                </div>
+                <div class="member-card">
+                    <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Aditya Dhakne">
+                    <h4>Aditya Dhakne</h4>
+                    <p>Backend Developer</p>
+                </div>
+                <div class="member-card">
+                    <img src="https://www.w3schools.com/howto/img_avatar2.png" alt="Siony Chaudhari">
+                    <h4>Siony Chaudhari</h4>
+                    <p>Frontend Developer</p>
+                </div>
+                <div class="member-card">
+                    <img src="https://www.w3schools.com/howto/img_avatar2.png" alt="Shreya Anjikhane">
+                    <h4>Shreya Anjikhane</h4>
+                    <p>Frontend Developer</p>
+                </div>
+            </div>
+        </div>
+
+         <section class="faq-section">
+  <h2>Frequently Asked Questions</h2>
+
+  <div class="faq-item">
+    <button class="faq-question">What is YOLO real-time object detection?</button>
+    <div class="faq-answer">
+      <p>YOLO (You Only Look Once) is an AI model that detects objects in images or video streams in real-time with high accuracy.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-question">Do I need to upload my data?</button>
+    <div class="faq-answer">
+      <p>No. You can process your images directly in the browser or through our backend. Your data stays secure.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-question">Can I export results?</button>
+    <div class="faq-answer">
+      <p>Yes. The detections can be downloaded as annotated images or JSON files for easy integration into your projects.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-question">Which models are supported?</button>
+    <div class="faq-answer">
+      <p>Currently, YOLOv8 is supported, but we plan to add more models soon.</p>
+    </div>
+  </div>
+
+</section>
+
+    </main>
+
+    <footer>
+        <div style="max-width:1200px; margin:auto; text-align:center;">
+            <p style="font-size:1.1rem; margin-bottom:1rem; font-weight:500;">Connect With Us</p>
+            <p>
+                <a href="https://github.com/YourRepoLink" target="_blank" style="color:#32dde6; text-decoration:none; margin:0 10px;">GitHub Repo</a> |
+                <a href="https://youtu.be/YourDemoVideoLink" target="_blank" style="color:#32dde6; text-decoration:none; margin:0 10px;">Demo Video</a> |
+                <a href="mailto:team@example.com" style="color:#32dde6; text-decoration:none; margin:0 10px;">Email Us</a>
+            </p>
+            <p style="font-size:0.85rem; color:#b3b0b0; margin-top:1rem;">
+                © 2025 Team Samfocus — YOLO Object Detection Project
+            </p>
+        </div>
+    </footer>
 
     <script>
-        const form = document.getElementById("uploadForm");
-        const resultBox = document.getElementById("resultBox");
-        const annotatedImage = document.getElementById("annotatedImage");
+        const uploadForm = document.getElementById('uploadForm');
+        const imageInput = document.getElementById('imageInput');
+        const resultBox = document.getElementById('resultBox');
+        const annotatedImage = document.getElementById('annotatedImage');
 
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const fileInput = document.getElementById("imageInput");
-            if (!fileInput.files.length) return alert("Please select an image.");
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // prevent page refresh
+
+            const file = imageInput.files[0];
+            if (!file) {
+                alert("Please select an image first!");
+                return;
+            }
 
             const formData = new FormData();
-            formData.append("image", fileInput.files[0]);
+            formData.append('image', file);
 
-            // Clear previous results and show "Detecting..."
-            resultBox.textContent = "Detecting...";
-            resultBox.classList.remove('placeholder');
-            resultBox.classList.add('loading');
-            annotatedImage.style.display = "none";
-            annotatedImage.src = ""; // Clear previous image source
-
+            resultBox.textContent = "Processing image... 🔄";
 
             try {
-                const res = await fetch("http://127.0.0.1:8000/detect", { method: "POST", body: formData });
+                const response = await fetch('/detect', {
+                    method: 'POST',
+                    body: formData
+                });
 
-                const contentType = res.headers.get("content-type");
-                if (contentType && contentType.includes("application/json")) {
-                    const data = await res.json();
+                if (!response.ok) throw new Error("Server returned an error");
 
-                    // --- START OF CHANGE ---
-                    // Option 1: Set a generic message (recommended for good UX)
-                    if (data.annotated_image) {
-                        resultBox.textContent = "Detection complete. See annotated image below.";
-                    } else if (data.error) {
-                         resultBox.textContent = `Error: ${data.error}`;
-                    } else {
-                        resultBox.textContent = "No objects detected or no annotated image generated.";
-                    }
+                const data = await response.json();
 
-                    // Option 2: Clear the text content completely (less informative)
-                    // resultBox.textContent = "";
-                    // --- END OF CHANGE ---
-
-                    resultBox.classList.remove('loading');
-
-                    if (data.annotated_image) {
-                        annotatedImage.src = data.annotated_image + "?t=" + new Date().getTime();
-                        annotatedImage.style.display = "block";
-                    }
-
+                if (data.error) {
+                    resultBox.textContent = "Error: " + data.error;
+                    annotatedImage.style.display = 'none';
                 } else {
-                    const text = await res.text();
-                    resultBox.classList.remove('loading');
-                    resultBox.textContent = "Error (non-JSON response):\n" + text;
-                    annotatedImage.style.display = "none";
+                    resultBox.textContent = JSON.stringify(data.detections, null, 2);
+                    annotatedImage.src = data.annotated_image;
+                    annotatedImage.style.display = 'block';
                 }
             } catch (err) {
-                resultBox.classList.remove('loading');
                 resultBox.textContent = "Error: " + err.message;
-                annotatedImage.style.display = "none";
+                annotatedImage.style.display = 'none';
             }
         });
     </script>
+    <script>
+  const faqs = document.querySelectorAll(".faq-item");
+
+  faqs.forEach(faq => {
+    faq.querySelector(".faq-question").addEventListener("click", () => {
+      faq.classList.toggle("active");
+    });
+  });
+</script>
+
 </body>
-<footer style="background:#0056b3; color:#fff; padding:2rem 1rem; margin-top:3rem;">
-  <div style="max-width:1100px; margin:auto; text-align:center;">
-    <p style="font-size:1.1rem; margin-bottom:1rem;"> Connect With Us</p>
-    <p>
-      <a href="https://github.com/YourRepoLink" target="_blank" style="color:#32dde6; text-decoration:none; margin:0 10px;">
-        GitHub Repo
-      </a> |
-      <a href="https://youtu.be/YourDemoVideoLink" target="_blank" style="color:#32dde6; text-decoration:none; margin:0 10px;">
-        Demo Video
-      </a> |
-      <a href="mailto:team@example.com" style="color:#32dde6; text-decoration:none; margin:0 10px;">
-        Email Us
-      </a>
-    </p>
-    <p style="font-size:0.85rem; color:#b3b0b0; margin-top:1rem;">
-      © 2025 Team Samfocus — YOLO Object Detection Project
-    </p>
-  </div>
-</footer>
 </html>
