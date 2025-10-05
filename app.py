@@ -6,6 +6,7 @@ import cv2
 from flask_cors import CORS # Import Flask-CORS
 from flask import Response
 import time
+import pandas as pd
 
 
 app = Flask(__name__, static_url_path='/static', static_folder='static') 
@@ -101,6 +102,15 @@ def detect():
         cv2.imwrite(output_path, img)
         annotated_image_url = f"/outputs/{output_filename}"
 
+        # Save detections CSV in outputs folder
+        csv_url = None
+        if detections:
+            df = pd.DataFrame(detections)
+            csv_filename = "predictions_" + filename.rsplit('.', 1)[0] + ".csv"
+            csv_path = os.path.join(OUTPUT_FOLDER, csv_filename)
+            df.to_csv(csv_path, index=False)
+            csv_url = f"/outputs/{csv_filename}"
+
         return jsonify({
             "detections": detections,
             "filename": filename,
@@ -164,3 +174,4 @@ def live():
 if __name__ == "__main__":
 
     app.run(host="0.0.0.0", port=8000, debug=True)
+
