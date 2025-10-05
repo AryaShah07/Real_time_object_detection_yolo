@@ -49,6 +49,10 @@ def health():
     status = {"server": "running", "model_loaded": model is not None}
     return jsonify(status), 200
 
+@app.route("/results.html")
+def results_partial():
+    return render_template("results.html")
+
 @app.route("/outputs/<filename>")
 def serve_output(filename):
     return send_from_directory(OUTPUT_FOLDER, filename)
@@ -161,4 +165,5 @@ def live():
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == "__main__":
+
     app.run(host="0.0.0.0", port=8000, debug=True)
