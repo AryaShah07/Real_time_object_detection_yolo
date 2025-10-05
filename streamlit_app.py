@@ -161,15 +161,62 @@ elif page == "Model Testing":
     st.title("Test Model on Images (via Flask API)")
 
     uploaded_file = st.file_uploader("Choose an image...", type=['jpg', 'jpeg', 'png'])
+    confidence_threshold = st.slider("Confidence Threshold", min_value=0.0, max_value=1.0, value=0.25, step=0.01)
+        
     
     if uploaded_file is not None:
-        image_bytes = uploaded_file.read()
-        files = {"image": (uploaded_file.name, image_bytes, "image/jpeg")}
+            try:
+                uploaded_file.seek(0)
+                # Open image directly from uploaded file safely
+                image = Image.open(uploaded_file).convert("RGB")
+                image_array = np.array(image)
+                
+                # Save a copy in outputs folder
+                save_path = os.path.join(OUTPUT_FOLDER, uploaded_file.name)
+                image.save(save_path)
+                
+                st.subheader("Original Image")
+                st.image(image, use_container_width=True)
+                
+                # Run YOLO prediction with confidence threshold
+                results = model.predict(source=image_array, conf=confidence_threshold, imgsz=640)
 
-        # Display original image
-        st.subheader("Original Image")
-        image = Image.open(io.BytesIO(image_bytes))
-        st.image(image, use_container_width=True)  # ✅ fixed
+                
+                st.subheader("Detection Result")
+                result_plot = results[0].plot()
+                st.image(result_plot, use_container_width=True)
+                
+                # Collect detections
+                detections_list = []
+                for res in results:
+                    for box in res.boxes:
+                        detections_list.append({
+                            "class": res.names[int(box.cls[0])],
+                            "confidence": float(box.conf[0]),
+                            "xmin": int(box.xyxy[0][0]),
+                            "ymin": int(box.xyxy[0][1]),
+                            "xmax": int(box.xyxy[0][2]),
+                            "ymax": int(box.xyxy[0][3])
+                        })
+                
+                # Save CSV in outputs folder
+                if detections_list:
+                    df = pd.DataFrame(detections_list)
+                    csv_filename = f"predictions_{uploaded_file.name.rsplit('.',1)[0]}.csv"
+                    csv_path = os.path.join(OUTPUT_FOLDER, csv_filename)
+                    df.to_csv(csv_path, index=False)
+                    
+                    st.subheader("Download Predictions")
+                    st.download_button(
+                        label="Download CSV",
+                        data=open(csv_path, "rb"),
+                        file_name=csv_filename,
+                        mime="text/csv"
+                    )
+                    st.success(f"CSV saved in outputs folder: {csv_filename}")
+                
+            except Exception as e:
+                st.error(f"Error reading uploaded image: {str(e)}")
 
         try:
             response = requests.post(f"{FLASK_API_URL}/detect", files=files)
