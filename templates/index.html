@@ -192,7 +192,7 @@
         const annotatedImage = document.getElementById('annotatedImage');
 
         uploadForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // prevent page refresh
+            e.preventDefault();
 
             const file = imageInput.files[0];
             if (!file) {
@@ -204,6 +204,7 @@
             formData.append('image', file);
 
             resultBox.textContent = "Processing image... 🔄";
+            annotatedImage.style.display = 'none';
 
             try {
                 const response = await fetch('/detect', {
@@ -218,16 +219,43 @@
                 if (data.error) {
                     resultBox.textContent = "Error: " + data.error;
                     annotatedImage.style.display = 'none';
-                } else {
-                    resultBox.textContent = JSON.stringify(data.detections, null, 2);
-                    annotatedImage.src = data.annotated_image;
-                    annotatedImage.style.display = 'block';
+                    return;
                 }
+
+                // Load results.html dynamically inside the results panel
+                const resultsPanel = document.querySelector('.results-panel');
+                const htmlResponse = await fetch('/results.html');
+                const htmlText = await htmlResponse.text();
+                resultsPanel.innerHTML = htmlText;
+
+                // Populate annotated image
+                const annotatedImg = document.getElementById('annotatedImage');
+                annotatedImg.src = data.annotated_image;
+                annotatedImg.style.display = 'block';
+
+                // Setup "Try Another Image" button
+                const backBtn = document.getElementById('backBtn');
+                backBtn.addEventListener('click', () => {
+                    // Reset just the form + results panel
+                    resultsPanel.innerHTML = `
+                        <h3>Results 📋</h3>
+                        <div class="result-box-wrapper">
+                            <pre id="resultBox" class="placeholder">Upload an image and start recognition to see your analysis results here.</pre>
+                        </div>
+                        <h4>Annotated Image:</h4>
+                        <img id="annotatedImage" src="" alt="Annotated Image" style="display:none;">
+                    `;
+                    uploadForm.reset(); // reset file input
+                    document.getElementById('resultBox').textContent = "Ready for new detection 🔍";
+                    document.getElementById('imageInput').value = "";
+                });
+
             } catch (err) {
                 resultBox.textContent = "Error: " + err.message;
                 annotatedImage.style.display = 'none';
             }
         });
+
     </script>
     <script>
   const faqs = document.querySelectorAll(".faq-item");
@@ -240,4 +268,5 @@
 </script>
 
 </body>
+
 </html>
