@@ -17,7 +17,7 @@ MODEL_PATH = "yolov8s.pt"
 
 try:
     model = YOLO(MODEL_PATH)
-    print(f"✅ Model loaded: {MODEL_PATH}")
+    print(f" Model loaded: {MODEL_PATH}")
 except Exception as e:
     print(f" Error loading model: {e}")
     model = None
@@ -110,13 +110,11 @@ def detect():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-    
 
-# LIVE WEBCAM STREAM ENDPOINT
-
+# Live webcam endpoint
 def generate_frames():
     """Continuously capture webcam frames and stream YOLO detections as MJPEG."""
-    camera = cv2.VideoCapture(0)  # 0 = default webcam
+    camera = cv2.VideoCapture(0) 
     if not camera.isOpened():
         raise RuntimeError("❌ Could not open webcam. Check camera permissions.")
 
@@ -125,10 +123,9 @@ def generate_frames():
         if not success:
             break
 
-        # Run YOLO prediction
+        
         results = model.predict(frame, imgsz=640, conf=0.3)
 
-        # Draw bounding boxes
         for r in results:
             for box in r.boxes:
                 cls_id = int(box.cls)
@@ -142,15 +139,15 @@ def generate_frames():
                 cv2.putText(frame, f"{cls_name} {conf:.2f}", (x1, y1 - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
 
-        # Encode frame as JPEG
+       
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
 
-        # Stream frame over HTTP
+        
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-        # Optional: slow down slightly to save CPU
+        
         time.sleep(0.03)
 
     camera.release()
