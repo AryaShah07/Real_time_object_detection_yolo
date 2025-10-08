@@ -11,32 +11,33 @@
 <body>
     <nav>
     <div class="nav-logo">
-        <img src="{{ url_for('static', filename='assets/yolo_logo.png') }}" alt="YOLO Logo" style="height:50px;">
+        <img src="{{ url_for('static', filename='assets/yolo_logo4.png') }}" alt="YOLO Logo" style="height:70px;">
     </div>
     <ul>
-        <li><a href="#hero" class="active">Home</a></li>
-        <li><a href="#about">About</a></li>
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#faq-section">FAQ</a></li>
+    <li><a href="#contact-section">Contact Us</a></li>
+ 
     </ul>
+
 </nav>
 
 
     <section class="hero-section" id="hero">
-        <div class="hero-content">
-            <h1>Real-time-object-detection 🔍✨</h1>
-            <p>
-                Experience real-time object detection powered by YOLO. 
-                Detect people, vehicles, and everyday objects instantly through your camera roll
-                – **all in your browser with complete privacy..**
-            </p>
-            <button class="try-now-button" onclick="document.getElementById('studio-section').scrollIntoView({ behavior: 'smooth' });">
-                <i class="fas fa-play"></i> Try It Now
-            </button>
-            
-            <div class="hero-placeholder-box">
-        <img src="{{ url_for('static', filename='assets/heroImage.jpg') }}" alt="AI Recognition Demo Image" class="hero-image">
+  <div class="hero-placeholder-box">
+    <img src="{{ url_for('static', filename='assets/heroimage.png') }}" alt="AI Recognition Demo Image" class="hero-image">
+    <div class="hero-overlay-content">
+      <h1>Real-time-object-detection 🔍✨</h1>
+      <p>
+        Experience real-time object detection powered by YOLO. 
+        Detect people, vehicles, and everyday objects instantly through your camera roll
+        – all in your browser with complete privacy.
+      </p>
     </div>
-        </div>
-    </section>
+  </div>
+</section>
+
 
     <section class="feature-cards-section">
         <div class="feature-card">
@@ -59,7 +60,7 @@
 
     <main>
         <div class="container studio-container" id="studio-section">
-            <h2>YOLO Object Detection Studio</h2>
+            <h2>YOLO Object Detection</h2>
             
             <div class="detection-studio-layout">
                 <div class="controls-panel">
@@ -136,7 +137,7 @@
             </div>
         </div>
 
-         <section class="faq-section">
+         <section class="faq-section" id="faq-section">
   <h2>Frequently Asked Questions</h2>
 
   <div class="faq-item">
@@ -172,18 +173,86 @@
     </main>
 
     <footer>
-        <div style="max-width:1200px; margin:auto; text-align:center;">
-            <p style="font-size:1.1rem; margin-bottom:1rem; font-weight:500;">Connect With Us</p>
-            <p>
-                <a href="https://github.com/YourRepoLink" target="_blank" style="color:#32dde6; text-decoration:none; margin:0 10px;">GitHub Repo</a> |
-                <a href="https://youtu.be/YourDemoVideoLink" target="_blank" style="color:#32dde6; text-decoration:none; margin:0 10px;">Demo Video</a> |
-                <a href="mailto:team@example.com" style="color:#32dde6; text-decoration:none; margin:0 10px;">Email Us</a>
-            </p>
-            <p style="font-size:0.85rem; color:#b3b0b0; margin-top:1rem;">
-                © 2025 Team Samfocus — YOLO Object Detection Project
-            </p>
+        <section class="contact-section" id="contact-section">
+    <div style="max-width:1200px; margin:auto; text-align:center; line-height:1.8;">
+        <p style="font-size:1.2rem; margin-bottom:1rem; font-weight:600;">Connect With Us</p>
+
+        <!-- Top row: Email & Phone -->
+        <div style="margin-bottom:15px;">
+            <span style="margin-right:30px;">
+                <i class="fas fa-envelope"></i> Email: 
+                <a href="mailto:team@example.com" style="color:#32dde6; text-decoration:none;">team@example.com</a>
+            </span>
+            <span>
+                <i class="fas fa-phone"></i> Phone: 
+                <a href="tel:+911234567890" style="color:#32dde6; text-decoration:none;">+91 12345 67890</a>
+            </span>
         </div>
+
+        <!-- Bottom row: GitHub, Demo, Email -->
+        <div style="margin-bottom:15px;">
+            <a href="https://github.com/YourRepoLink" target="_blank" style="color:#32dde6; text-decoration:none; margin:0 10px;">GitHub Repo</a> |
+            <a href="https://youtu.be/YourDemoVideoLink" target="_blank" style="color:#32dde6; text-decoration:none; margin:0 10px;">Demo Video</a> |
+            <a href="mailto:team@example.com" style="color:#32dde6; text-decoration:none; margin:0 10px;">Email Us</a>
+        </div>
+
+        <p style="font-size:0.85rem; color:#b3b0b0; margin-top:1rem;">
+            © 2025 Team Samfocus — YOLO Object Detection Project
+        </p>
+    </div>
+</section>
+
     </footer>
+
+   <script>
+const navLinks = document.querySelectorAll('nav ul li a');
+const navbarHeight = 80; // same as your navbar height
+
+function setActiveLink() {
+  const scrollPos = window.scrollY + navbarHeight + 10; // offset for sticky navbar
+
+  navLinks.forEach(link => {
+    const section = document.querySelector(link.getAttribute('href'));
+    if (!section) return;
+
+    const sectionTop = section.offsetTop;
+    const sectionBottom = sectionTop + section.offsetHeight;
+
+    if (scrollPos >= sectionTop && scrollPos < sectionBottom) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    }
+  });
+
+  // Special case: if scrolled to bottom, make Contact active
+  if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
+    navLinks.forEach(l => l.classList.remove('active'));
+    const contactLink = document.querySelector('nav ul li a[href="#contact-section"]');
+    if (contactLink) contactLink.classList.add('active');
+  }
+}
+
+// Smooth scroll with offset
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+
+    const target = document.querySelector(link.getAttribute('href'));
+    if (!target) return;
+
+    const targetPos = target.offsetTop - navbarHeight; // subtract navbar height
+    window.scrollTo({
+      top: targetPos,
+      behavior: 'smooth'
+    });
+  });
+});
+
+window.addEventListener('scroll', setActiveLink);
+window.addEventListener('load', setActiveLink);
+</script>
+
+
 
     <script>
         const uploadForm = document.getElementById('uploadForm');

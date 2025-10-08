@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 from ultralytics import YOLO
 import os
 import cv2
-from flask_cors import CORS # Import Flask-CORS
+from flask_cors import CORS 
 from flask import Response
 import time
 import pandas as pd
