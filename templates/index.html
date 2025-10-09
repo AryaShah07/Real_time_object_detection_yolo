@@ -307,6 +307,37 @@ window.addEventListener('load', setActiveLink);
                 annotatedImg.src = data.annotated_image;
                 annotatedImg.style.display = 'block';
 
+                // Populate detected object list with styled cards
+                if (data.detections && data.detections.length > 0) {
+                  const detailsDiv = document.getElementById('detectionDetails');
+                  const objectList = document.getElementById('objectList');
+                  detailsDiv.style.display = 'block';
+                  objectList.innerHTML = '';
+
+                  data.detections.forEach(det => {
+                    const li = document.createElement('li');
+                    const confidencePercent = (det.confidence * 100).toFixed(1);
+
+                    li.innerHTML = `
+                      <div class="object-card">
+                        <div class="object-header">
+                          <span class="object-class">${det.class.toUpperCase()}</span>
+                          <span class="object-confidence">${confidencePercent}%</span>
+                        </div>
+                        <div class="confidence-bar">
+                          <div class="confidence-fill" style="width:${confidencePercent}%;"></div>
+                        </div>
+                      </div>
+                    `;
+                    objectList.appendChild(li);
+                  });
+                } else {
+                  const detailsDiv = document.getElementById('detectionDetails');
+                  detailsDiv.style.display = 'block';
+                  document.getElementById('objectList').innerHTML = `
+                    <li><div class="object-card"><span class="object-class">No objects detected</span></div></li>`;
+                }
+
                 // Setup "Try Another Image" button
                 const backBtn = document.getElementById('backBtn');
                 backBtn.addEventListener('click', () => {
