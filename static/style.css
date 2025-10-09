@@ -334,7 +334,166 @@ img#annotatedImage {
   display: block;
 }
 
+/* Center result image properly */
+.annotated-image-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
+  width: 100%;
+}
 
+#annotatedImage {
+  max-width: 90%;
+  height: auto;
+  border: 2px solid #555;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Detection details list */
+.detection-details {
+  text-align: left;
+  margin: 20px auto;
+  width: 80%;
+  background: #0b0b25;
+  padding: 15px 20px;
+  border-radius: 12px;
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+}
+
+.detection-details h4 {
+  color: #00e5ff;
+  margin-bottom: 10px;
+}
+
+.detection-details ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.detection-details li {
+  margin: 5px 0;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+/* --- Detection Results Styling --- */
+.detection-details {
+  text-align: left;
+  margin: 25px auto;
+  width: 85%;
+  background: #0a0a2e;
+  padding: 20px;
+  border-radius: 16px;
+  color: #fff;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+}
+
+.detection-details h4 {
+  color: #00eaff;
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.detection-details ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+}
+
+.detection-details li {
+  flex: 1 1 250px;
+}
+
+.object-card {
+  background: linear-gradient(135deg, #1b1b4d, #23235c);
+  border: 1px solid #00e5ff44;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.object-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0, 229, 255, 0.3);
+}
+
+.object-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.object-class {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+.object-confidence {
+  font-size: 0.9rem;
+  color: #00ffc8;
+}
+
+.confidence-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00ffc8, #0078ff);
+  border-radius: 5px;
+  transition: width 0.4s ease;
+}
+
+/* --- Try Another Image Button --- */
+.try-again-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #00e5ff, #0078ff);
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin: 25px auto;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 229, 255, 0.4);
+}
+
+.try-again-btn:hover {
+  background: linear-gradient(135deg, #00ffc8, #0094ff);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 229, 255, 0.5);
+}
+
+.try-again-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 6px rgba(0, 229, 255, 0.3);
+}
+
+.try-again-btn:focus {
+  outline: none;
+}
 
 /* ===== About Section (Keep as is) ===== */
 .about-section {
