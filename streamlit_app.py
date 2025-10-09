@@ -218,7 +218,7 @@ elif page == "Model Testing":
             except Exception as e:
                 st.error(f"Error reading uploaded image: {str(e)}")
 
-        try:
+    try:
             response = requests.post(f"{FLASK_API_URL}/detect", files=files)
             if response.status_code == 200:
                 data = response.json()
@@ -238,7 +238,7 @@ elif page == "Model Testing":
                     st.write(f"Class: {det['class']} | Confidence: {det['confidence']:.2f}")
             else:
                 st.error(f"Error from Flask API: {response.json().get('error')}")
-        except Exception as e:
+    except Exception as e:
             st.error(f"Could not connect to Flask API: {e}")
 
 # ----------------------------

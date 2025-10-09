@@ -11,13 +11,13 @@
 <body>
     <nav>
     <div class="nav-logo">
-        <img src="{{ url_for('static', filename='assets/yolo_logo4.png') }}" alt="YOLO Logo" style="height:70px;">
+        <img src="{{ url_for('static', filename='assets/yolo_logo3.png') }}" alt="YOLO Logo" style="height:70px;">
     </div>
     <ul>
     <li><a href="#hero">Home</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#faq-section">FAQ</a></li>
-    <li><a href="#contact-section">Contact Us</a></li>
+    <li><a href="{{ url_for('contact') }}">Contact Us</a></li>
  
     </ul>
 
@@ -212,17 +212,22 @@ function setActiveLink() {
   const scrollPos = window.scrollY + navbarHeight + 10; // offset for sticky navbar
 
   navLinks.forEach(link => {
-    const section = document.querySelector(link.getAttribute('href'));
-    if (!section) return;
+  link.addEventListener('click', e => {
+    const href = link.getAttribute('href');
 
-    const sectionTop = section.offsetTop;
-    const sectionBottom = sectionTop + section.offsetHeight;
-
-    if (scrollPos >= sectionTop && scrollPos < sectionBottom) {
-      navLinks.forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
+    if (href.startsWith("#")) {
+      // Internal page scroll
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (!target) return;
+      const targetPos = target.offsetTop - navbarHeight;
+      window.scrollTo({ top: targetPos, behavior: 'smooth' });
     }
+    // External links or Flask routes (/contact) will navigate normally
   });
+});
+
+
 
   // Special case: if scrolled to bottom, make Contact active
   if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
