@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 import cv2
 import numpy as np
@@ -24,6 +23,48 @@ st.set_page_config(
 # Flask API Base URL
 # ----------------------------
 FLASK_API_URL = "http://127.0.0.1:8000"  # Make sure your Flask API is running
+
+# --- NEW: outputs folder and small helpers ---
+OUTPUT_FOLDER = os.path.join(os.path.dirname(__file__), "outputs")
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+
+@st.cache_data
+def summarize_results(results_df):
+    # returns small KPI dict used in dashboard
+    if results_df is None or results_df.empty:
+        return {}
+    best_map = float(results_df['metrics/mAP50(B)'].max())
+    last = results_df.iloc[-1]
+    last_map = float(last['metrics/mAP50(B)'])
+    final_train_loss = float(last['train/box_loss'])
+    final_val_loss = float(last['val/box_loss'])
+    total_time = float(results_df['time'].sum())
+    return {
+        "best_map": best_map,
+        "last_map": last_map,
+        "final_train_loss": final_train_loss,
+        "final_val_loss": final_val_loss,
+        "total_time_s": total_time
+    }
+
+def predict_image(image_array, model, conf=0.25, iou=0.45, imgsz=640):
+    # Returns annotated image (numpy/PIL) and detections list
+    if model is None:
+        raise RuntimeError("Model not loaded")
+    results = model.predict(source=image_array, conf=conf, iou=iou, imgsz=imgsz)
+    annotated = results[0].plot()  # numpy image with annotations
+    detections_list = []
+    for res in results:
+        for box in res.boxes:
+            detections_list.append({
+                "class": res.names[int(box.cls[0])],
+                "confidence": float(box.conf[0]),
+                "xmin": int(box.xyxy[0][0]),
+                "ymin": int(box.xyxy[0][1]),
+                "xmax": int(box.xyxy[0][2]),
+                "ymax": int(box.xyxy[0][3])
+            })
+    return annotated, detections_list
 
 # ----------------------------
 # Load Model, YAML Config, and Training Results (Optional for Dashboard)
@@ -73,18 +114,100 @@ model = load_model()
 config = load_yaml_config()
 results_df = load_training_results()
 
+# --- NEW: Small CSS / hero banner to apply two-color aesthetic (primary + background) ---
+# Use same colors as .streamlit/config.toml and add a secondary accent
+primary = "#0B5FFF"            # primary accent
+background = "#F7F9FC"         # app background
+secondary = "#FFFFFF"          # card / secondary background (clean white)
+text_color = "#0B254A"         # primary text color
+app_font = "sans-serif"        # single font family enforced
+
+st.markdown(
+    f"""
+    <style>
+    /* Enforce single font app-wide */
+    html, body, [class*="css"]  {{ font-family: {app_font} !important; color: {text_color}; }}
+
+    /* Hero banner */
+    .hero {{
+        padding: 18px;
+        border-radius: 10px;
+        background: linear-gradient(90deg, {primary}22, {background});
+        color: {text_color};
+        margin-bottom: 18px;
+    }}
+    .hero h2 {{ margin:4px 0; color: {primary}; font-weight:700; }}
+
+    /* Quick action cards */
+    .quick-card {{
+        border-radius: 8px;
+        padding: 12px;
+        background: {secondary};
+        box-shadow: 0 6px 18px rgba(11,95,255,0.06);
+        border: 1px solid rgba(11,95,255,0.06);
+        margin-bottom: 8px;
+    }}
+
+    /* Gallery grid and items */
+    .gallery-grid {{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 8px;
+    }}
+    .gallery-item img {{ width: 100%; border-radius: 6px; box-shadow: 0 4px 10px rgba(11,95,255,0.04); }}
+
+    /* Buttons (Streamlit default buttons keep native styling; add subtle focus) */
+    .stButton>button:focus {{ outline-color: {primary}; box-shadow: 0 0 0 3px rgba(11,95,255,0.08); }}
+
+    /* Small utility */
+    .muted {{ color: rgba(11,37,74,0.6); font-size: 0.95rem; }}
+    </style>
+    <div class="hero">
+        <h2>YOLO Dashboard</h2>
+        <div class="muted">Clean • Focused • Production-ready</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
 # ----------------------------
 # Sidebar Navigation
 # ----------------------------
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Go to", ["Dashboard", "Model Testing", "Live Video Feed", "Dataset Info"])
 
+# --- NEW: Model management UI (top of the app, under header) ---
+# place this near the top after loading model/config/results_df
+st.sidebar.markdown("## Model Management")
+model_path_input = st.sidebar.text_input("Model weights path", value=os.path.join(os.path.dirname(__file__), 'runs/detect/final_best_train4/weights/best.pt'))
+if st.sidebar.button("Reload model"):
+    try:
+        model = YOLO(model_path_input) if os.path.exists(model_path_input) else None
+        st.sidebar.success("Model reloaded" if model is not None else "Model path invalid")
+    except Exception as e:
+        st.sidebar.error(f"Reload failed: {e}")
+
+st.sidebar.markdown("---")
+# quick model status
+model_status = "Loaded" if model is not None else "Not loaded"
+st.sidebar.write(f"Model status: **{model_status}**")
+st.sidebar.write(f"Outputs: {OUTPUT_FOLDER}")
+
 # ----------------------------
 # Dashboard Page
 # ----------------------------
 if page == "Dashboard":
     st.title("Training Performance Dashboard")
-    
+    # --- NEW: KPI cards ---
+    if results_df is not None:
+        kpi = summarize_results(results_df)
+        if kpi:
+            col1, col2, col3, col4 = st.columns(4)
+            col1.metric("Best mAP50", f"{kpi['best_map']:.4f}")
+            col2.metric("Last epoch mAP50", f"{kpi['last_map']:.4f}")
+            col3.metric("Final train box loss", f"{kpi['final_train_loss']:.4f}")
+            col4.metric("Final val box loss", f"{kpi['final_val_loss']:.4f}")
+            st.caption(f"Total training time ≈ {kpi['total_time_s']:.0f}s")
     if results_df is not None:
         tab1, tab2, tab3 = st.tabs(["Loss Metrics", "Performance Metrics", "Learning Rate"])
         
@@ -158,88 +281,67 @@ if page == "Dashboard":
 # Model Testing (Static Image via Flask API)
 # ----------------------------
 elif page == "Model Testing":
-    st.title("Test Model on Images (via Flask API)")
+    st.title("Test Model on Images")
+    st.markdown("Upload one or more images, set thresholds, then click 'Run Predictions'.")
 
-    uploaded_file = st.file_uploader("Choose an image...", type=['jpg', 'jpeg', 'png'])
-    confidence_threshold = st.slider("Confidence Threshold", min_value=0.0, max_value=1.0, value=0.25, step=0.01)
-        
-    
-    if uploaded_file is not None:
-            try:
-                uploaded_file.seek(0)
-                # Open image directly from uploaded file safely
-                image = Image.open(uploaded_file).convert("RGB")
-                image_array = np.array(image)
-                
-                # Save a copy in outputs folder
-                save_path = os.path.join(OUTPUT_FOLDER, uploaded_file.name)
-                image.save(save_path)
-                
-                st.subheader("Original Image")
-                st.image(image, use_container_width=True)
-                
-                # Run YOLO prediction with confidence threshold
-                results = model.predict(source=image_array, conf=confidence_threshold, imgsz=640)
+    conf = st.slider("Confidence threshold", 0.0, 1.0, 0.25, 0.01)
+    iou = st.slider("NMS IoU threshold", 0.0, 1.0, 0.45, 0.01)
+    imgsz = st.selectbox("Inference image size", options=[320, 416, 640, 1024], index=2)
+    multiple = st.checkbox("Allow multiple uploads", value=True)
 
-                
-                st.subheader("Detection Result")
-                result_plot = results[0].plot()
-                st.image(result_plot, use_container_width=True)
-                
-                # Collect detections
-                detections_list = []
-                for res in results:
-                    for box in res.boxes:
-                        detections_list.append({
-                            "class": res.names[int(box.cls[0])],
-                            "confidence": float(box.conf[0]),
-                            "xmin": int(box.xyxy[0][0]),
-                            "ymin": int(box.xyxy[0][1]),
-                            "xmax": int(box.xyxy[0][2]),
-                            "ymax": int(box.xyxy[0][3])
-                        })
-                
-                # Save CSV in outputs folder
-                if detections_list:
-                    df = pd.DataFrame(detections_list)
-                    csv_filename = f"predictions_{uploaded_file.name.rsplit('.',1)[0]}.csv"
-                    csv_path = os.path.join(OUTPUT_FOLDER, csv_filename)
-                    df.to_csv(csv_path, index=False)
-                    
-                    st.subheader("Download Predictions")
-                    st.download_button(
-                        label="Download CSV",
-                        data=open(csv_path, "rb"),
-                        file_name=csv_filename,
-                        mime="text/csv"
-                    )
-                    st.success(f"CSV saved in outputs folder: {csv_filename}")
-                
-            except Exception as e:
-                st.error(f"Error reading uploaded image: {str(e)}")
+    uploaded_files = st.file_uploader("Choose image(s)...", type=['jpg','jpeg','png'], accept_multiple_files=multiple)
+    run_btn = st.button("Run Predictions")
 
-    try:
-            response = requests.post(f"{FLASK_API_URL}/detect", files=files)
-            if response.status_code == 200:
-                data = response.json()
-                annotated_url = FLASK_API_URL + data["annotated_image"]
+    if run_btn and uploaded_files:
+        if model is None:
+            st.error("Model not loaded. Use Model Management to load weights.")
+        else:
+            progress = st.progress(0)
+            total = len(uploaded_files)
+            all_dets = []
+            for idx, uf in enumerate(uploaded_files, start=1):
+                try:
+                    uf.seek(0)
+                    img = Image.open(uf).convert("RGB")
+                    arr = np.array(img)
+                    with st.spinner(f"Running inference on {uf.name} ({idx}/{total})..."):
+                        annotated, detections = predict_image(arr, model, conf=conf, iou=iou, imgsz=imgsz)
+                    out_name = f"annotated_{os.path.basename(uf.name)}"
+                    out_path = os.path.join(OUTPUT_FOLDER, out_name)
+                    # save annotated image (OpenCV expects BGR)
+                    if isinstance(annotated, np.ndarray):
+                        cv2.imwrite(out_path, cv2.cvtColor(annotated, cv2.COLOR_RGB2BGR))
+                    else:
+                        annotated.save(out_path)
+                    # display results
+                    st.subheader(f"Result: {uf.name}")
+                    st.image(annotated, use_column_width=True)
+                    if detections:
+                        df = pd.DataFrame(detections)
+                        st.dataframe(df)
+                        # save csv
+                        csv_name = f"{os.path.splitext(uf.name)[0]}_predictions.csv"
+                        csv_path = os.path.join(OUTPUT_FOLDER, csv_name)
+                        df.to_csv(csv_path, index=False)
+                        st.download_button("Download CSV", data=open(csv_path, "rb"), file_name=csv_name, mime="text/csv")
+                        all_dets.append(df)
+                    else:
+                        st.info("No detections for this image.")
+                except Exception as e:
+                    st.error(f"Failed on {uf.name}: {e}")
+                progress.progress(int(idx/total*100))
+            progress.empty()
+            st.success("Batch predictions completed.")
+            # aggregated CSV if multiple
+            if len(all_dets) > 1:
+                agg = pd.concat(all_dets, ignore_index=True)
+                agg_path = os.path.join(OUTPUT_FOLDER, "predictions_aggregated.csv")
+                agg.to_csv(agg_path, index=False)
+                st.download_button("Download aggregated CSV", data=open(agg_path, "rb"), file_name="predictions_aggregated.csv", mime="text/csv")
 
-                # Fetch annotated image correctly
-                img_response = requests.get(annotated_url)
-                if img_response.status_code == 200:
-                    annotated_img = Image.open(io.BytesIO(img_response.content))
-                    st.subheader("Detection Result")
-                    st.image(annotated_img, use_container_width=True)  # ✅ fixed
-                else:
-                    st.error(f"Failed to fetch annotated image: {img_response.status_code}")
-
-                st.subheader("Detections")
-                for det in data["detections"]:
-                    st.write(f"Class: {det['class']} | Confidence: {det['confidence']:.2f}")
-            else:
-                st.error(f"Error from Flask API: {response.json().get('error')}")
-    except Exception as e:
-            st.error(f"Could not connect to Flask API: {e}")
+    # Backwards-compatible single-file immediate mode (if user just uploaded and didn't click run)
+    elif uploaded_files and not run_btn:
+        st.info("Set parameters and click 'Run Predictions' to process uploaded images.")
 
 # ----------------------------
 # Live Video Feed (Dynamic Input)
