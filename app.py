@@ -79,7 +79,9 @@ def detect():
         if model is None:
             return jsonify({"detections": [], "filename": filename, "annotated_image": None, "error": "Object detection model not loaded on the server."}), 500
 
-        results = model.predict(save_path, imgsz=640, conf=0.2)
+        confidence_threshold = float(request.form.get('confidence', 0.2))
+        results = model.predict(save_path, imgsz=640, conf=confidence_threshold,verbose=False)
+
 
         detections = []
         img = cv2.imread(save_path)
@@ -106,7 +108,7 @@ def detect():
         cv2.imwrite(output_path, img)
         annotated_image_url = f"/outputs/{output_filename}"
 
-        # Save detections CSV in outputs folder
+        
         csv_url = None
         if detections:
             df = pd.DataFrame(detections)
@@ -118,12 +120,18 @@ def detect():
         return jsonify({
             "detections": detections,
             "filename": filename,
-            "annotated_image": annotated_image_url
+            "annotated_image": annotated_image_url,
+            "csv_url": csv_url
         }), 200
+    
+        
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
+
+
+
 
 # Live webcam endpoint
 def generate_frames():
