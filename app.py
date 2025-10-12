@@ -44,9 +44,10 @@ def index():
 def about():
     return render_template("about.html")
 
-@app.route("/contact", methods=["GET"])
+@app.route('/contact')
 def contact():
-    return render_template("contact.html")
+    return render_template('contact.html')
+
 
 
 @app.route("/health", methods=["GET"])

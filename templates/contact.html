@@ -12,27 +12,31 @@
 
   <nav>
     <div class="nav-logo">
-      <a href="{{ url_for('index') }}">
-        <img src="{{ url_for('static', filename='assets/yolo_logo3.png') }}" alt="YOLO Logo" style="height:70px;">
-      </a>
-    </div>
+        <a href="{{ url_for('index') }}">
+            <img src="{{ url_for('static', filename='assets/yolo_logo3.png') }}" alt="YOLO Logo" style="height:70px;">
+        </a>
     </div>
     <ul>
-    <li><a href="#hero">Home</a></li>
-    <li><a href="#about">About</a></li>
-    <li><a href="#faq-section">FAQ</a></li>
-    <li><a href="{{ url_for('contact') }}">Contact Us</a></li>
- 
+        <li><a href="{{ url_for('index') }}#hero">Home</a></li>
+        <li><a href="{{ url_for('index') }}#about">About</a></li>
+        <li><a href="{{ url_for('index') }}#faq-section">FAQ</a></li>
+        <li><a href="#contact-section">Contact Us</a></li>
     </ul>
-  </nav>
+</nav>
 
   <section class="contact-us-container">
     <div class="contact-form-column">
+      <h1 style="font-size: 2rem; font-weight: 700; margin-top: 0; margin-bottom: 20px; color: #333;">Send Us a Message</h1>
       <form action="#" method="POST">
-        <input type="text" id="firstName" name="firstName" placeholder="First name *" required>
-        <input type="text" id="lastName" name="lastName" placeholder="Last name *" required>
-        <input type="email" id="email" name="email" placeholder="Email *" required>
-        <input type="text" id="country" name="country" placeholder="Country *" required>
+        <!-- START: Fields wrapped in form-grid for left/right layout -->
+        <div class="form-grid">
+            <input type="text" id="firstName" name="firstName" placeholder="First name *" required>
+            <input type="text" id="lastName" name="lastName" placeholder="Last name *" required>
+            <input type="email" id="email" name="email" placeholder="Email *" required>
+            <input type="text" id="country" name="country" placeholder="Country *" required>
+        </div>
+        <!-- END: Fields wrapped in form-grid -->
+
         <input type="text" id="companyName" name="companyName" placeholder="Company name">
         <select id="subject" name="subject" required>
           <option value="" disabled selected>Subject *</option>
@@ -45,55 +49,66 @@
       </form>
     </div>
 
+    <!-- START: Contact details column (was missing details content in your original) -->
     <div class="contact-details-column">
-      <div class="contact-info">
-        <p><i class="fas fa-map-marker-alt"></i> Laisvės av. 125A, Vilnius, LT-06118, Lithuania</p>
-        <p><i class="fas fa-phone"></i> +370 5 277 3315</p>
-        <p><i class="fas fa-envelope"></i> sentisight@neurotechnology.com</p>
-        <p><i class="fas fa-link"></i> www.sentisight.ai</p>
-      </div>
-
-      <div class="map-container">
-       <iframe
-  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2304.515378316896!2d25.285!3d54.6872!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dd9443e9c9b2b3%3A0x4027a76e8f2!2sLaisv%C4%97s%20av.%20125A%2C%20Vilnius%2C%20Lithuania!5e0!3m2!1sen!2sus!4v1600000000000!5m2!1sen!2sus"
+        <h2 style="margin-top: 0;">Our Location</h2>
+        <div class="contact-info">
+            <p><i class="fas fa-map-marker-alt"></i> Address: 666, Upper Indira Nagar, Bibwewadi, Pune, Maharashtra, India - 411037</p>
+          
+        </div>
+        
+        <div class="map-container">
+           <iframe
+  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3782.074209744279!2d73.84605837492114!3d18.495676287374894!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2bf44b1f1c6b7%3A0xefa7b6e74f16f1d7!2s666%2C%20Upper%20Indira%20Nagar%2C%20Bibwewadi%2C%20Pune%2C%20Maharashtra%20411037%2C%20India!5e0!3m2!1sen!2sus!4v1600000000000!5m2!1sen!2sus"
   width="100%"
-  height="300"
+  height="450"
   style="border:0;"
   allowfullscreen=""
   loading="lazy"
   referrerpolicy="no-referrer-when-downgrade">
 </iframe>
 
-      </div>
+        </div>
     </div>
+    <!-- END: Contact details column -->
   </section>
 
-  <!-- Keep your same footer -->
   <footer>
-    <section class="contact-section" id="contact-section">
-      <div style="max-width:1200px; margin:auto; text-align:center; line-height:1.8;">
-        <p style="font-size:1.2rem; margin-bottom:1rem; font-weight:600;">Connect With Us</p>
+        <section class="contact-section" id="contact-section">
+    <div style="max-width:1200px; margin:auto; text-align:center; line-height:1.8;">
+        <p style="font-size:1.2rem; margin-bottom:1rem; font-weight:600;">CONTACT US</p>
+
+        <!-- Top row: Email & Phone -->
         <div style="margin-bottom:15px;">
-          <span style="margin-right:30px;">
-            <i class="fas fa-envelope"></i> Email: 
-            <a href="mailto:team@example.com" style="color:#32dde6; text-decoration:none;">team@example.com</a>
-          </span>
-          <span>
-            <i class="fas fa-phone"></i> Phone: 
-            <a href="tel:+911234567890" style="color:#32dde6; text-decoration:none;">+91 12345 67890</a>
-          </span>
-        </div>
+    <span style="margin-right:30px;">
+        <i class="fas fa-envelope"></i> Email: 
+        <a href="mailto:sionychaudhari@gmail.com" style="color:#32dde6; text-decoration:none;">sionychaudhari@gmail.com</a>
+    </span>
+    <span>
+        <i class="fas fa-phone phone-icon"></i> Phone: 
+        <a href="tel:+911234567890" style="color:#32dde6; text-decoration:none;">+91 12345 67890</a>
+    </span>
+    
+</div>
+      <div style="margin-bottom:15px;">
+       <span style="margin-right:30px; color:white;">
+    <i class="fas fa-map-marker-alt"></i> Address: 
+    <span style="color:#32dde6;">666, Upper Indira Nagar, Bibwewadi, Pune, Maharashtra, India - 411037</span>
+</span></div>
+        <!-- Bottom row: GitHub, Demo, Email -->
         <div style="margin-bottom:15px;">
-          <a href="https://github.com/YourRepoLink" target="_blank" style="color:#32dde6; text-decoration:none; margin:0 10px;">GitHub Repo</a> |
-          <a href="https://youtu.be/YourDemoVideoLink" target="_blank" style="color:#32dde6; text-decoration:none; margin:0 10px;">Demo Video</a> |
-          <a href="mailto:team@example.com" style="color:#32dde6; text-decoration:none; margin:0 10px;">Email Us</a>
+            <a href="https://github.com/AryaShah07/Real_time_object_detection_yolo" target="_blank" style="color:#32dde6; text-decoration:none; margin:0 10px;">GitHub Repo</a> |
+            <!-- <a href="https://youtu.be/YourDemoVideoLink" target="_blank" style="color:#32dde6; text-decoration:none; margin:0 10px;">Demo Video</a> | -->
+            <a href="{{ url_for('contact') }}" style="color:#32dde6; text-decoration:none; margin:0 10px;">Need Help?</a>
         </div>
+
         <p style="font-size:0.85rem; color:#b3b0b0; margin-top:1rem;">
-          © 2025 Team Samfocus — YOLO Object Detection Project
+            © 2025 Team Samfocus — YOLO Object Detection Project
         </p>
-      </div>
-    </section>
-  </footer>
+    </div>
+</section>
+
+    </footer>
 
 </body>
 </html>

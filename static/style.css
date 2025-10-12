@@ -334,6 +334,25 @@ img#annotatedImage {
   display: block;
 }
 
+/* ===== FAQ Arrow Styling ===== */
+.faq-question {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq-question .arrow {
+  transition: transform 0.3s ease;
+  font-size: 1rem;
+  color: #133E87; /* match theme */
+}
+
+.faq-item.active .arrow {
+  transform: rotate(90deg);
+}
+
+
 /* Center result image properly */
 .annotated-image-wrapper {
   display: flex;
@@ -568,6 +587,12 @@ img#annotatedImage {
     color: #000000;
 }
 
+.phone-icon {
+  transform: scaleX(-1); /* flips icon horizontally */
+  display: inline-block; /* required for transform to work properly */
+}
+
+
 /* ===== Responsive Design (Keep as is) ===== */
 @media (max-width: 768px) {
     .container {
@@ -603,4 +628,209 @@ footer {
     width: 100%; 
     text-align: center;
     border-top: 1px solid #170c40;
+}
+
+/* ===== CONTACT PAGE STYLING (Structural CSS from your request) ===== */
+.contact-us-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 40px;
+  max-width: 1100px;
+  margin: 60px auto;
+  /* --- EDITED: Increased horizontal padding for fields inside the form --- */
+  padding: 30px 45px; /* 30px Top/Bottom, 45px Left/Right */
+  
+  font-family: 'Roboto', sans-serif;
+  /* Added a background and shadow to match the overall card aesthetic in the image */
+  background-color: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.contact-form-column {
+  flex: 1 1 55%;
+}
+
+.contact-details-column {
+  flex: 1 1 40%;
+  background-color: #fafafa;
+  border: 1px solid #e0e0e0;
+  padding: 25px;
+  border-radius: 10px;
+}
+
+.contact-form-column form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* --- NEW TWO-COLUMN GRID STYLING (Crucial for left/right field layout) --- */
+.form-grid {
+  display: grid;
+  /* Two equal columns */
+  grid-template-columns: 1fr 1fr; 
+  
+  /* --- INCREASED GAP FOR VISIBLE SEPARATION --- */
+  row-gap: 20px; 
+  column-gap: 40px; /* Significantly increased horizontal space */
+}
+
+/* --- INPUT FIELD STYLING (Updated to match the image) --- */
+.contact-form-column input,
+.contact-form-column select,
+.contact-form-column textarea {
+  width: 100%; 
+  /* Increased padding to make fields large, as in the image */
+  padding: 16px 12px; 
+  /* Light, subtle border as seen in the image */
+  border: 1px solid #ddd; 
+  /* Subtle rounded corners */
+  border-radius: 8px; 
+  font-size: 16px;
+  /* Removed background color to get the white field look */
+  background-color: #fff;
+  outline: none;
+  transition: all 0.2s ease;
+  /* A slight inner shadow effect, similar to the image's fields */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.contact-form-column input:focus,
+.contact-form-column select:focus,
+.contact-form-column textarea:focus {
+  /* Retained your focus style but adjusted the color */
+  border-color: #32dde6;
+  box-shadow: 0 0 5px rgba(50, 221, 230, 0.4);
+}
+
+/* Ensure the textarea takes up full width (span both columns if inside the grid) */
+.contact-form-column textarea {
+  grid-column: 1 / -1; 
+  min-height: 150px;
+}
+
+/* --- SUBMIT BUTTON STYLING (Corrected width and curve for .send-button) --- */
+.send-button {
+  /* Set width to content size */
+  width: fit-content; 
+  padding: 12px 25px; 
+  
+  /* Curved border-radius */
+  border-radius: 30px; 
+  
+  /* Styles matching the yellow button in the screenshot */
+  align-self: flex-start; /* Aligns to the left of the form */
+  background-color: #133E87; 
+  color: #ffffff; 
+  font-weight: 600;
+  font-size: 16px; 
+  border: none;
+  box-shadow: 0 4px 15px rgba(7, 156, 255, 0.5); 
+  cursor: pointer;
+  transition: 0.3s ease, transform 0.3s ease;
+  margin-top: 10px;
+}
+
+.send-button:hover {
+  background-color: #ff9800; 
+  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.6);
+  transform: translateY(-2px); 
+}
+
+/* ===== CONTACT DETAILS STYLING (From your request) ===== */
+.contact-details-column h2 {
+    font-size: 1.5rem; 
+    font-weight: 500; 
+    margin-bottom: 15px; 
+    color: #333;
+}
+.contact-info p {
+  margin: 10px 0;
+  font-size: 15px;
+  color: #333;
+}
+
+.contact-info i {
+  color: #32dde6;
+  margin-right: 10px;
+}
+
+.map-container {
+  margin-top: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+.map-container iframe {
+    width: 100%; /* Ensure map iframe is fully responsive */
+    display: block;
+}
+
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .contact-us-container {
+    flex-direction: column;
+  }
+  .contact-details-column {
+    flex-basis: auto;
+    width: auto;
+  }
+  /* Stack two-column grid fields into one column for mobile */
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+
+.live-video-layout {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.video-panel {
+  position: relative;
+  width: 640px;
+  max-width: 100%;
+  border: 2px solid #32dde6;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+#liveVideo {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+#liveOverlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #32dde6;
+  font-weight: bold;
+  background-color: rgba(0,0,0,0.3);
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.live-controls button {
+  padding: 8px 15px;
+  margin-right: 10px;
+  background-color: #32dde6;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.live-controls button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
 }
