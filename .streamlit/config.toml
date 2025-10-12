@@ -1,7 +1,7 @@
 [theme]
-base = "light"
-primaryColor = "#0B5FFF"
-backgroundColor = "#F7F9FC"
-secondaryBackgroundColor = "#FFFFFF"
-textColor = "#0B254A"
+base = "dark"
+primaryColor = "#0B5FFF"            # primary accent (blue)
+backgroundColor = "#071018"         # app background (dark navy)
+secondaryBackgroundColor = "#0f2433" # panel/background for cards/panels
+textColor = "#E6F0FF"               # light text color
 font = "sans serif"

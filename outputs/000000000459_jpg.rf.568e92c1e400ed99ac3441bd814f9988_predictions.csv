@@ -1,2 +1,4 @@
-class,confidence,xmin,ymin,xmax,ymax
-person,0.8601446747779846,106,144,983,1278
+Class,Confidence,X,Y,W,H
+person,0.85,122,145,803,1119
+tie,0.81,440,527,128,621
+person,0.55,817,498,330,758
