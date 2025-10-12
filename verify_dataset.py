@@ -25,7 +25,7 @@ def verify_yolo_dataset(dataset_path):
 
     # Fix: resolve paths relative to the current script directory
     dataset_dirs = {}
-    for key in ["train", "valid"]:
+    for key in ["train", "val", "valid"]:
         if key in yaml_data:
             # If path is relative, resolve from dataset_path
             dir_path = os.path.normpath(os.path.join(dataset_path, os.path.relpath(yaml_data[key], "..")))

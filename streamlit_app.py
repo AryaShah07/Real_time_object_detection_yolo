@@ -72,7 +72,11 @@ def predict_image(image_array, model, conf=0.25, iou=0.45, imgsz=640):
 @st.cache_resource
 def load_model():
     try:
-        model_path = os.path.join(os.path.dirname(__file__), 'runs/detect/final_best_train4/weights/best.pt')
+        # primary new default model path (user-provided)
+        model_path = os.path.join(os.path.dirname(__file__), 'runs/detect/best_train_results2/weights/best.pt')
+        # fallback to previous location if needed
+        if not os.path.exists(model_path):
+            model_path = os.path.join(os.path.dirname(__file__), 'runs/detect/final_best_train4/weights/best.pt')
         if os.path.exists(model_path):
             return YOLO(model_path)
         else:
@@ -99,7 +103,10 @@ def load_yaml_config():
 @st.cache_data
 def load_training_results():
     try:
-        results_path = os.path.join(os.path.dirname(__file__), 'runs/detect/final_best_train4/results.csv')
+        # prefer results from the new run folder, fallback to older run
+        results_path = os.path.join(os.path.dirname(__file__), 'runs/detect/best_train_results2/results.csv')
+        if not os.path.exists(results_path):
+            results_path = os.path.join(os.path.dirname(__file__), 'runs/detect/final_best_train4/results.csv')
         if os.path.exists(results_path):
             return pd.read_csv(results_path)
         else:
@@ -179,7 +186,10 @@ page = st.sidebar.radio("Go to", ["Dashboard", "Model Testing", "Live Video Feed
 # --- NEW: Model management UI (top of the app, under header) ---
 # place this near the top after loading model/config/results_df
 st.sidebar.markdown("## Model Management")
-model_path_input = st.sidebar.text_input("Model weights path", value=os.path.join(os.path.dirname(__file__), 'runs/detect/final_best_train4/weights/best.pt'))
+model_path_input = st.sidebar.text_input(
+    "Model weights path",
+    value=os.path.join(os.path.dirname(__file__), 'runs/detect/best_train_results2/weights/best.pt')
+)
 if st.sidebar.button("Reload model"):
     try:
         model = YOLO(model_path_input) if os.path.exists(model_path_input) else None
