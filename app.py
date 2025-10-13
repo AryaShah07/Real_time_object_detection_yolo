@@ -7,6 +7,10 @@ from flask_cors import CORS
 from flask import Response
 import time
 import pandas as pd
+import base64
+from PIL import Image
+import io
+import numpy as np
 
 
 app = Flask(__name__, static_url_path='/static', static_folder='static') 
@@ -183,6 +187,62 @@ def live():
         return jsonify({"error": "Model not loaded."}), 500
     return Response(generate_frames(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route("/detect_live_frame", methods=["POST"])
+def detect_live_frame():
+    """Fast endpoint for live frame detection from Streamlit"""
+    try:
+        data = request.get_json()
+        if not data or 'frame' not in data:
+            return jsonify({"error": "No frame data"}), 400
+        
+        if model is None:
+            return jsonify({"error": "Model not loaded"}), 500
+        
+        # Get parameters
+        frame_data = data['frame']
+        confidence = data.get('confidence', 0.4)
+        
+        # Convert base64 to image
+        import base64
+        from PIL import Image
+        import io
+        import numpy as np
+        
+        image_data = base64.b64decode(frame_data.split(',')[1])
+        image_pil = Image.open(io.BytesIO(image_data))
+        image_np = np.array(image_pil)
+        frame = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
+        
+        # Run YOLO detection (faster, no tracking for live)
+        results = model.predict(frame, imgsz=640, conf=confidence, verbose=False)
+        
+        detections = []
+        for r in results:
+            if r.boxes is not None:
+                for box in r.boxes:
+                    cls_id = int(box.cls[0])
+                    cls_name = model.names[cls_id]
+                    conf = float(box.conf[0])
+                    bbox = box.xyxy[0].tolist()
+                    
+                    if conf >= confidence:
+                        detections.append({
+                            "class": cls_name,
+                            "class_id": cls_id,
+                            "confidence": conf,
+                            "bbox": [int(x) for x in bbox]
+                        })
+        
+        return jsonify({
+            "detections": detections,
+            "count": len(detections),
+            "frame_processed": True
+        })
+        
+    except Exception as e:
+        print(f"Live detection error: {e}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
 

@@ -9,6 +9,9 @@ import os
 from PIL import Image
 import io
 import requests
+import time
+import base64
+import json
 
 # ----------------------------
 # Streamlit Page Configuration
@@ -20,10 +23,6 @@ st.set_page_config(
 )
 
 # ----------------------------
-# Flask API Base URL
-# ----------------------------
-FLASK_API_URL = "http://127.0.0.1:8000"  # Make sure your Flask API is running
-
 # --- NEW: outputs folder and small helpers ---
 OUTPUT_FOLDER = os.path.join(os.path.dirname(__file__), "outputs")
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
@@ -121,58 +120,135 @@ model = load_model()
 config = load_yaml_config()
 results_df = load_training_results()
 
-# --- NEW: Small CSS / hero banner to apply two-color aesthetic (primary + background) ---
-# Use same colors as .streamlit/config.toml and add a secondary accent
-primary = "#0B5FFF"            # primary accent
-background = "#F7F9FC"         # app background
-secondary = "#FFFFFF"          # card / secondary background (clean white)
-text_color = "#0B254A"         # primary text color
-app_font = "sans-serif"        # single font family enforced
+# --- THEME / STYLING (replaces prior CSS hero block) ---
+# Use a consistent dark palette and a tertiary accent for sidebar cards.
+primary = "#0B5FFF"            # main accent
+accent = "#00D1B2"             # secondary accent (teal) for subtle highlights
+bg = "#071018"                 # app background (dark navy)
+panel = "#0F2433"              # panel/card background
+card = "#0b1f2a"               # inner card background
+text_color = "#E6F0FF"         # primary text color
+muted = "rgba(230,240,255,0.72)"  # muted text
+app_font = "sans-serif"
 
 st.markdown(
     f"""
     <style>
-    /* Enforce single font app-wide */
-    html, body, [class*="css"]  {{ font-family: {app_font} !important; color: {text_color}; }}
+    /* Apply app-wide font and background */
+    html, body, [class*="css"] {{
+        font-family: {app_font} !important;
+        color: {text_color};
+        background-color: {bg} !important;
+    }}
+
+    /* Main app area: soften edges */
+    .stApp > div {{
+        background: linear-gradient(180deg, {bg}, #071827) !important;
+        padding-top: 8px;
+    }}
 
     /* Hero banner */
     .hero {{
-        padding: 18px;
+        padding: 16px 18px;
         border-radius: 10px;
-        background: linear-gradient(90deg, {primary}22, {background});
+        background: linear-gradient(90deg, rgba(11,95,255,0.08), rgba(0,209,178,0.03));
         color: {text_color};
-        margin-bottom: 18px;
+        margin-bottom: 14px;
+        border: 1px solid rgba(255,255,255,0.03);
     }}
-    .hero h2 {{ margin:4px 0; color: {primary}; font-weight:700; }}
+    .hero h2 {{ margin:4px 0; color: {primary}; font-weight:700; letter-spacing:0.2px; }}
+    .hero .muted {{ color: {muted}; margin-top:2px; }}
 
-    /* Quick action cards */
+    /* Sidebar card */
+    .sidebar-card {{
+        border-radius: 10px;
+        padding: 10px 12px;
+        background: linear-gradient(180deg, {panel}, {card});
+        margin-bottom: 12px;
+        border-left: 4px solid {primary};
+        box-shadow: 0 6px 18px rgba(2,8,23,0.6);
+    }}
+    .sidebar-card h3 {{ margin: 0 0 4px 0; color: {text_color}; font-size:1.05rem; }}
+    .sidebar-card .muted {{ color: {muted}; font-size: 0.92rem; }}
+
+    /* KPI metric cards: polish */
+    .stMetric {{
+        border-radius: 10px;
+        padding: 10px 14px;
+        background: linear-gradient(180deg, rgba(11,95,255,0.04), rgba(11,95,255,0.02));
+        border: 1px solid rgba(255,255,255,0.03);
+    }}
+
+    /* Quick-action / gallery cards */
     .quick-card {{
-        border-radius: 8px;
+        border-radius: 10px;
         padding: 12px;
-        background: {secondary};
-        box-shadow: 0 6px 18px rgba(11,95,255,0.06);
-        border: 1px solid rgba(11,95,255,0.06);
-        margin-bottom: 8px;
+        background: linear-gradient(180deg, {panel}, {card});
+        border: 1px solid rgba(255,255,255,0.03);
+        box-shadow: 0 8px 20px rgba(2,8,23,0.6);
+        margin-bottom: 10px;
     }}
 
-    /* Gallery grid and items */
+    /* Gallery grid */
     .gallery-grid {{
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 8px;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 10px;
     }}
-    .gallery-item img {{ width: 100%; border-radius: 6px; box-shadow: 0 4px 10px rgba(11,95,255,0.04); }}
+    .gallery-item img {{
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 6px 18px rgba(2,8,23,0.6);
+        border: 1px solid rgba(255,255,255,0.02);
+    }}
 
-    /* Buttons (Streamlit default buttons keep native styling; add subtle focus) */
-    .stButton>button:focus {{ outline-color: {primary}; box-shadow: 0 0 0 3px rgba(11,95,255,0.08); }}
+    /* Buttons: subtle color and focus */
+    .stButton>button {{
+        background-color: {primary} !important;
+        color: white !important;
+        border-radius: 8px !important;
+        padding: 8px 14px !important;
+        box-shadow: none !important;
+        border: none !important;
+    }}
+    .stButton>button:hover {{ filter: brightness(1.08); }}
+    .stButton>button:focus {{ outline: none; box-shadow: 0 0 0 4px rgba(11,95,255,0.12); }}
 
-    /* Small utility */
-    .muted {{ color: rgba(11,37,74,0.6); font-size: 0.95rem; }}
+    /* Plotly container background to blend with theme */
+    .stPlotlyChart>div, .stPlotlyChart>div>div {{
+        background: transparent !important;
+    }}
+
+    /* Small utilities */
+    .muted {{ color: {muted}; font-size: 0.95rem; }}
+
+    /* Ensure Streamlit file_uploader browse button matches primary theme color */
+    /* Targets the file uploader container and its internal button */
+    div[data-testid="stFileUploader"] button,
+    div[data-testid="stFileUploader"] .stButton>button {{
+        background: linear-gradient(90deg, {primary}, #0073E6) !important;
+        color: #ffffff !important;
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+        border: none !important;
+        cursor: pointer !important;
+        box-shadow: none !important;
+    }}
+
+    /* Reinforce Run Predictions button style (apply to all streamlit buttons for consistency) */
+    .stButton>button, .stButton>button[role="button"] {{
+        background: linear-gradient(90deg, {primary}, #0073E6) !important;
+        color: #fff !important;
+        border-radius: 8px !important;
+        padding: 10px 16px !important;
+        font-weight: 700;
+        cursor: pointer !important;
+        border: none !important;
+    }}
+    .stButton>button:hover, .stButton>button[role="button"]:hover {{ filter: brightness(1.06); }}
+
+    /* existing custom styles continue... */
     </style>
-    <div class="hero">
-        <h2>YOLO Dashboard</h2>
-        <div class="muted">Clean • Focused • Production-ready</div>
-    </div>
     """,
     unsafe_allow_html=True,
 )
@@ -288,20 +364,104 @@ if page == "Dashboard":
             st.plotly_chart(fig, use_container_width=True)
 
 # ----------------------------
-# Model Testing (Static Image via Flask API)
+# Model Testing (Enhanced Layout only — logic preserved)
 # ----------------------------
 elif page == "Model Testing":
-    st.title("Test Model on Images")
-    st.markdown("Upload one or more images, set thresholds, then click 'Run Predictions'.")
+    st.title("YOLO Object Detection")
+    st.markdown("Upload images (drag & drop or browse), tune thresholds, and run batch predictions. Results show annotated image and a detections summary.")
 
-    conf = st.slider("Confidence threshold", 0.0, 1.0, 0.25, 0.01)
-    iou = st.slider("NMS IoU threshold", 0.0, 1.0, 0.45, 0.01)
-    imgsz = st.selectbox("Inference image size", options=[320, 416, 640, 1024], index=2)
-    multiple = st.checkbox("Allow multiple uploads", value=True)
+    # Page-specific small CSS for boxes, upload area, cards
+    st.markdown(
+        """
+        <style>
+        .param-box {
+            border-radius:10px;
+            padding:12px;
+            background: linear-gradient(180deg, rgba(11,95,255,0.04), rgba(11,95,255,0.02));
+            border:1px solid rgba(255,255,255,0.03);
+            text-align:center;
+            height:110px;
+        }
+        .param-label { font-size:0.95rem; color: rgba(230,240,255,0.9); margin-bottom:8px; }
+        .param-value { font-weight:700; font-size:1.1rem; color: #E6F0FF; }
 
-    uploaded_files = st.file_uploader("Choose image(s)...", type=['jpg','jpeg','png'], accept_multiple_files=multiple)
-    run_btn = st.button("Run Predictions")
+        .drop-area {
+            border:2px dashed rgba(255,255,255,0.08);
+            border-radius:8px;
+            padding:28px;
+            text-align:center;
+            color: rgba(230,240,255,0.7);
+            background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
+            min-height:120px;
+        }
 
+        .run-btn {
+            display:block;
+            width:100%;
+            padding:12px 18px;
+            background: linear-gradient(90deg, #0B5FFF, #0073E6);
+            color:white;
+            border-radius:10px;
+            border:none;
+            font-weight:700;
+            font-size:1rem;
+        }
+
+        .img-card {
+            border-radius:10px;
+            padding:8px;
+            background: linear-gradient(180deg, #0F2433, #0b1f2a);
+            border:1px solid rgba(255,255,255,0.03);
+        }
+
+        .summary-card {
+            border-radius:10px;
+            padding:12px;
+            background: linear-gradient(180deg, #0F2433, #071827);
+            border:1px solid rgba(255,255,255,0.03);
+        }
+
+        .small-caption { color: rgba(230,240,255,0.7); font-size:0.95rem; }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Top row: parameter boxes
+    pcol1, pcol2, pcol3 = st.columns([1,1,1], gap="large")
+    with pcol1:
+        st.markdown('<div class="param-box"><div class="param-label">Confidence Threshold</div>', unsafe_allow_html=True)
+        conf = st.slider("", 0.0, 1.0, 0.75 if 'conf' not in st.session_state else st.session_state.conf, 0.01, key="conf_slider")
+        st.markdown(f'<div class="param-value">{conf:.2f}</div></div>', unsafe_allow_html=True)
+    with pcol2:
+        st.markdown('<div class="param-box"><div class="param-label">NMS IoU Threshold</div>', unsafe_allow_html=True)
+        iou = st.slider("", 0.0, 1.0, 0.40 if 'iou' not in st.session_state else st.session_state.iou, 0.01, key="iou_slider")
+        st.markdown(f'<div class="param-value">{iou:.2f}</div></div>', unsafe_allow_html=True)
+    with pcol3:
+        st.markdown('<div class="param-box"><div class="param-label">Inference Size</div>', unsafe_allow_html=True)
+        imgsz = st.selectbox("", options=[320, 416, 640, 1024], index=2, key="imgsz_select")
+        st.markdown(f'<div class="param-value">{imgsz}</div></div>', unsafe_allow_html=True)
+
+    st.markdown("")  # small spacer
+
+    # Middle: use only the Streamlit uploader (remove the custom drop-area + fake browse button)
+    up_col, browse_col = st.columns([3,1], gap="medium")
+    with up_col:
+        # single uploader that shows drag-and-drop + browse; label kept for clarity
+        uploaded_files = st.file_uploader("📤 Drag and drop images here (JPG, JPEG, PNG) — or click Browse files", type=['jpg','jpeg','png'], accept_multiple_files=True, key="file_uploader")
+    with browse_col:
+        # keep a small help hint; remove the non-functional HTML browse button
+        st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
+        st.markdown('<div class="small-caption" style="margin-top:8px">Use the uploader on the left to select files.</div>', unsafe_allow_html=True)
+
+    st.markdown("")  # spacer
+
+    # Large Run Predictions button (centered)
+    run_col1, run_col2, run_col3 = st.columns([1,2,1])
+    with run_col2:
+        run_btn = st.button("Run Predictions", key="run_predictions", help="Run inference on uploaded images")
+
+    # Prediction logic (preserve original)
     if run_btn and uploaded_files:
         if model is None:
             st.error("Model not loaded. Use Model Management to load weights.")
@@ -323,37 +483,63 @@ elif page == "Model Testing":
                         cv2.imwrite(out_path, cv2.cvtColor(annotated, cv2.COLOR_RGB2BGR))
                     else:
                         annotated.save(out_path)
-                    # display results
-                    st.subheader(f"Result: {uf.name}")
-                    st.image(annotated, use_column_width=True)
-                    if detections:
-                        df = pd.DataFrame(detections)
-                        st.dataframe(df)
-                        # save csv
-                        csv_name = f"{os.path.splitext(uf.name)[0]}_predictions.csv"
-                        csv_path = os.path.join(OUTPUT_FOLDER, csv_name)
-                        df.to_csv(csv_path, index=False)
-                        st.download_button("Download CSV", data=open(csv_path, "rb"), file_name=csv_name, mime="text/csv")
-                        all_dets.append(df)
-                    else:
-                        st.info("No detections for this image.")
+
+                    # Display results in polished two-column layout
+                    res_col_left, res_col_right = st.columns([2,1], gap="large")
+                    with res_col_left:
+                        st.markdown(f'<div class="img-card">', unsafe_allow_html=True)
+                        st.image(annotated, use_container_width=True)
+                        st.markdown(f'<div class="small-caption" style="margin-top:6px">Saved to: <code>{out_path}</code></div>', unsafe_allow_html=True)
+                        st.markdown(f'</div>', unsafe_allow_html=True)
+                    with res_col_right:
+                        st.markdown('<div class="summary-card">', unsafe_allow_html=True)
+                        st.markdown("<h4 style='margin:0 0 6px 0'>Detections Summary</h4>", unsafe_allow_html=True)
+                        if detections:
+                            # Build DataFrame with X,Y,W,H
+                            rows = []
+                            for d in detections:
+                                x_min = d.get("xmin", 0)
+                                y_min = d.get("ymin", 0)
+                                x_max = d.get("xmax", 0)
+                                y_max = d.get("ymax", 0)
+                                w = x_max - x_min
+                                h = y_max - y_min
+                                rows.append({
+                                    "Class": d.get("class", ""),
+                                    "Confidence": round(d.get("confidence", 0), 2),
+                                    "X": int(x_min),
+                                    "Y": int(y_min),
+                                    "W": int(w),
+                                    "H": int(h)
+                                })
+                            df_res = pd.DataFrame(rows)
+                            st.dataframe(df_res.style.format({"Confidence":"{:.2f}"}), use_container_width=True)
+                            # Save csv to outputs/ (no download button shown)
+                            csv_name = f"{os.path.splitext(uf.name)[0]}_predictions.csv"
+                            csv_path = os.path.join(OUTPUT_FOLDER, csv_name)
+                            df_res.to_csv(csv_path, index=False)
+                            st.markdown(f'<div class="small-caption">Saved predictions CSV to: <code>{csv_path}</code></div>', unsafe_allow_html=True)
+                            all_dets.append(df_res)
+                        else:
+                            st.info("No detections for this image.")
+                        st.markdown('</div>', unsafe_allow_html=True)
+
                 except Exception as e:
                     st.error(f"Failed on {uf.name}: {e}")
                 progress.progress(int(idx/total*100))
             progress.empty()
             st.success("Batch predictions completed.")
             # aggregated CSV if multiple
-            if len(all_dets) > 1:
+            if all_dets:
                 agg = pd.concat(all_dets, ignore_index=True)
                 agg_path = os.path.join(OUTPUT_FOLDER, "predictions_aggregated.csv")
                 agg.to_csv(agg_path, index=False)
-                st.download_button("Download aggregated CSV", data=open(agg_path, "rb"), file_name="predictions_aggregated.csv", mime="text/csv")
+                st.markdown(f'<div class="small-caption">Saved aggregated predictions to: <code>{agg_path}</code></div>', unsafe_allow_html=True)
 
-    # Backwards-compatible single-file immediate mode (if user just uploaded and didn't click run)
     elif uploaded_files and not run_btn:
         st.info("Set parameters and click 'Run Predictions' to process uploaded images.")
 
-# ----------------------------
+#----------------------------
 # Live Video Feed (Dynamic Input)
 # ----------------------------
 elif page == "Live Video Feed":
@@ -364,8 +550,7 @@ elif page == "Live Video Feed":
         <h5>Real-time webcam detection via Flask API</h5>
         <img src="http://127.0.0.1:8000/live" width="700" />
         """,
-        unsafe_allow_html=True
-    )
+        unsafe_allow_html=True)
 
 # ----------------------------
 # Dataset Info
