@@ -38,12 +38,15 @@
         <!-- END: Fields wrapped in form-grid -->
 
         <input type="text" id="companyName" name="companyName" placeholder="Company name">
-        <select id="subject" name="subject" required>
-          <option value="" disabled selected>Subject *</option>
-          <option value="general">General inquiry</option>
-          <option value="sales">Sales</option>
-          <option value="support">Support</option>
-        </select>
+        <div class="select-wrapper">
+  <select id="subject" name="subject" required>
+    <option value="" disabled selected>Subject *</option>
+    <option value="general">General inquiry</option>
+    <option value="sales">Sales</option>
+    <option value="support">Support</option>
+  </select>
+</div>
+
         <textarea id="message" name="message" placeholder="Your Message *" rows="6" required></textarea>
         <button type="submit" class="send-button">Send</button>
       </form>
@@ -82,7 +85,7 @@
         <div style="margin-bottom:15px;">
     <span style="margin-right:30px;">
         <i class="fas fa-envelope"></i> Email: 
-        <a href="mailto:sionychaudhari@gmail.com" style="color:#32dde6; text-decoration:none;">sionychaudhari@gmail.com</a>
+        <a href="mailto:sionychaudhari2006@gmail.com" style="color:#32dde6; text-decoration:none;">sionychaudhari2006@gmail.com</a>
     </span>
     <span>
         <i class="fas fa-phone phone-icon"></i> Phone: 

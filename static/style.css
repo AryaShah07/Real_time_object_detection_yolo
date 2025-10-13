@@ -769,6 +769,102 @@ footer {
     display: block;
 }
 
+/* Wrapper to handle custom arrow */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Dropdown styling */
+/* Force consistent style for Subject dropdown */
+.select-wrapper select {
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important; /* make text normal */
+  color: #999 !important;      /* same light gray as placeholders */
+  background-color: #fff !important;
+  border: 1px solid #ddd !important;
+  border-radius: 8px !important;
+  padding: 16px 12px !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Make the first option (placeholder “Subject *”) appear gray */
+.select-wrapper select option[disabled][selected] {
+  color: #999 !important;
+}
+
+/* When a real option is selected, make it black */
+.select-wrapper select:valid {
+  color: #333 !important;
+}
+
+/* Custom arrow styling */
+.select-wrapper::after {
+  font-family: 'Roboto', sans-serif !important;
+  font-weight: 400 !important; /* make text normal */
+  color: #999 !important;  
+  content: '›';
+  position: absolute;
+  right: 15px;
+  top: 38%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 1.5rem;
+  color: #555;
+}
+
+/* Optional: keep all form inputs consistent */
+form input[type="text"],
+form input[type="email"],
+form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: normal;
+  box-sizing: border-box;
+  margin-bottom: 15px;
+}
+
+
+/* Keep spacing consistent */
+form input,
+form select,
+form textarea {
+  margin-bottom: 15px;
+}
+
+/* ===== UNIFY FONT STYLE FOR ALL FORM FIELDS ===== */
+.contact-form-column input,
+.contact-form-column select,
+.contact-form-column textarea {
+  font-family: 'Roboto', sans-serif; /* ensure uniform font */
+  font-size: 16px;
+  font-weight: 400; /* normal, not bold */
+  color: #333;
+}
+
+/* Specifically ensure Subject dropdown text is not bold */
+.select-wrapper select {
+  font-weight: 400 !important;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  color: #333;
+}
+
+/* Optional – unify placeholder text look */
+::placeholder {
+  color: #999;
+  font-weight: 400;
+  font-family: 'Roboto', sans-serif;
+}
+
+
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {

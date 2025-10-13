@@ -225,7 +225,7 @@
         <div style="margin-bottom:15px;">
     <span style="margin-right:30px;">
         <i class="fas fa-envelope"></i> Email: 
-        <a href="mailto:sionychaudhari@gmail.com" style="color:#32dde6; text-decoration:none;">sionychaudhari@gmail.com</a>
+        <a href="mailto:sionychaudhari2006@gmail.com" style="color:#32dde6; text-decoration:none;">sionychaudhari2006@gmail.com</a>
     </span>
     <span>
         <i class="fas fa-phone phone-icon"></i> Phone: 
@@ -253,58 +253,68 @@
 
     </footer>
 
-   <script>
+<script>
 const navLinks = document.querySelectorAll('nav ul li a');
-const navbarHeight = 80; // same as your navbar height
+const sections = document.querySelectorAll('section');
+const navbarHeight = 80;
+
+let clickedLink = null; // Track the clicked link
 
 function setActiveLink() {
-  const scrollPos = window.scrollY + navbarHeight + 10; // offset for sticky navbar
+  if (clickedLink) return; // Keep the clicked link highlighted
 
-  navLinks.forEach(link => {
-  link.addEventListener('click', e => {
-    const href = link.getAttribute('href');
+  let scrollPos = window.scrollY + navbarHeight + 50;
 
-    if (href.startsWith("#")) {
-      // Internal page scroll
-      e.preventDefault();
-      const target = document.querySelector(href);
-      if (!target) return;
-      const targetPos = target.offsetTop - navbarHeight;
-      window.scrollTo({ top: targetPos, behavior: 'smooth' });
+  sections.forEach(section => {
+    const id = section.getAttribute('id');
+    if (!id) return;
+    const link = document.querySelector(`nav ul li a[href="#${id}"]`);
+    if (!link) return;
+
+    const sectionTop = section.offsetTop;
+    const sectionBottom = sectionTop + section.offsetHeight - 120;
+
+    if (scrollPos >= sectionTop && scrollPos < sectionBottom) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
     }
-    // External links or Flask routes (/contact) will navigate normally
   });
-});
 
-
-
-  // Special case: if scrolled to bottom, make Contact active
-  if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
+  // Remove highlight only if at the absolute bottom of page
+  if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 5) {
     navLinks.forEach(l => l.classList.remove('active'));
-    const contactLink = document.querySelector('nav ul li a[href="#contact-section"]');
-    if (contactLink) contactLink.classList.add('active');
   }
 }
 
-// Smooth scroll with offset
+// Smooth scroll with offset and click highlight
 navLinks.forEach(link => {
   link.addEventListener('click', e => {
-    e.preventDefault();
+    const href = link.getAttribute('href');
+    if (!href.startsWith('#')) return;
 
-    const target = document.querySelector(link.getAttribute('href'));
+    e.preventDefault();
+    const target = document.querySelector(href);
     if (!target) return;
 
-    const targetPos = target.offsetTop - navbarHeight; // subtract navbar height
-    window.scrollTo({
-      top: targetPos,
-      behavior: 'smooth'
-    });
+    const targetPos = target.offsetTop - navbarHeight + 5;
+    window.scrollTo({ top: targetPos, behavior: 'smooth' });
+
+    // Remove active from all links and highlight clicked one
+    navLinks.forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+    clickedLink = link; // Keep clicked link highlighted
   });
 });
 
-window.addEventListener('scroll', setActiveLink);
+// Optional: reset clickedLink after scrolling
+window.addEventListener('scroll', () => {
+  setActiveLink();
+});
+
 window.addEventListener('load', setActiveLink);
 </script>
+
+
 
 
 
